@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Auditor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-FfS3cY+V5zUpjYcW0M+a8V7wQ6q7nKrB3p2KK6uyU5D3M0o2SXfQ6cUjFgd5edwH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-gradient px-4 py-3 shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">Expense Auditor</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="/">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/receipts/">Receipts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/policies/">Policies</a></li>
+                <li class="nav-item"><a class="nav-link" href="/audit/">Audit</a></li>
+                <li class="nav-item"><a class="nav-link" href="/notifications/">Notifications</a></li>
+                <li class="nav-item"><a class="btn btn-outline-light ms-3" href="/admin/">Admin</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<main class="container py-5">
+    {% block content %}{% endblock %}
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-H66gF8QOZ6XKcgF0kY2LGQ0Z6bKuF1jUa7FDimitrgl0g7Zo6hArbqSUoS7dGLeR" crossorigin="anonymous"></script>
+<script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
