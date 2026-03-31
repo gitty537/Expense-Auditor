@@ -4,35 +4,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Auditor</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-FfS3cY+V5zUpjYcW0M+a8V7wQ6q7nKrB3p2KK6uyU5D3M0o2SXfQ6cUjFgd5edwH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <title>{% block title %}Expense Auditor{% endblock %}</title>
+    <meta name="description" content="Expense Auditor — Intelligent expense workflows for finance teams, managers, and auditors.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-gradient px-4 py-3 shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/">Expense Auditor</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link" href="/">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="/receipts/">Receipts</a></li>
-                <li class="nav-item"><a class="nav-link" href="/policies/">Policies</a></li>
-                <li class="nav-item"><a class="nav-link" href="/audit/">Audit</a></li>
-                <li class="nav-item"><a class="nav-link" href="/notifications/">Notifications</a></li>
-                <li class="nav-item"><a class="btn btn-outline-light ms-3" href="/admin/">Admin</a></li>
-            </ul>
+
+<!-- ── NAVBAR ── -->
+<nav class="ea-navbar" role="navigation" aria-label="Main navigation">
+    <a class="brand" href="/">
+        <span class="brand-dot"></span>
+        Expense Auditor
+    </a>
+
+    <ul class="ea-nav-links" id="eaNavLinks">
+        <li><a href="/" id="nav-home">Dashboard</a></li>
+        <li><a href="/receipts/" id="nav-receipts">Receipts</a></li>
+        <li><a href="/policies/" id="nav-policies">Policies</a></li>
+        <li><a href="/audit/" id="nav-audit">Audit</a></li>
+        <li><a href="/notifications/" id="nav-notifications">Notifications</a></li>
+    </ul>
+
+    <div class="ea-nav-cta">
+        {% if user.is_authenticated %}
+        <div class="ea-dropdown-wrapper">
+            <a href="#" class="btn-ghost-white" style="font-size:0.8rem;">
+                <i class="bi bi-person-circle"></i> {{ user.username }}
+            </a>
+            <div class="ea-dropdown-menu">
+                <a href="/">Dashboard</a>
+                <a href="/logout/" class="logout-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
         </div>
+        {% else %}
+        <a href="/login/" class="btn-lime">Sign In</a>
+        {% endif %}
+        <button class="ea-nav-mobile-btn" id="eaMobileNavBtn" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
     </div>
 </nav>
-<main class="container py-5">
+
+<!-- ── AUTHENTICATED WELCOME BAR ── -->
+{% if user.is_authenticated %}
+<div class="welcome-bar">
+    <p class="greet">Welcome back, <strong>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}</strong> &mdash; your audit workspace is ready.</p>
+    <div class="role-badges">
+        {% for role in user.roles.all %}
+        <span class="role-badge">{{ role.role }}</span>
+        {% empty %}
+        <span class="role-badge" style="opacity:0.5;">No roles assigned</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- ── MAIN ── -->
+<main>
     {% block content %}{% endblock %}
 </main>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-H66gF8QOZ6XKcgF0kY2LGQ0Z6bKuF1jUa7FDimitrgl0g7Zo6hArbqSUoS7dGLeR" crossorigin="anonymous"></script>
+
+<!-- ── FOOTER ── -->
+<footer class="ea-footer">
+    <div class="container-ea">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h3>Expense<span>Auditor</span></h3>
+                <p>A unified platform for intelligent expense management, receipt processing, policy compliance, and audit decisioning across your organisation.</p>
+                <div style="display:flex;gap:10px;">
+                    <a href="/receipts/" class="btn-lime" style="font-size:0.78rem;padding:8px 18px;">Get Started</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h6>Platform</h6>
+                <ul>
+                    <li><a href="/">Dashboard</a></li>
+                    <li><a href="/receipts/">Receipts</a></li>
+                    <li><a href="/policies/">Policies</a></li>
+                    <li><a href="/audit/">Audit</a></li>
+                    <li><a href="/notifications/">Notifications</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h6>Roles</h6>
+                <ul>
+                    <li><a href="#">Employee</a></li>
+                    <li><a href="#">Finance Auditor</a></li>
+                    <li><a href="#">Finance Manager</a></li>
+                    <li><a href="#">Audit Viewer</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h6>Administration</h6>
+                <ul>
+                    <li><a href="/admin/">Admin Panel</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="/logout/">Sign Out</a></li>
+                    {% else %}
+                    <li><a href="/login/">Sign In</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Expense Auditor. All rights reserved.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Compliance</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
 <script src="{% static 'js/app.js' %}"></script>
 </body>
 </html>

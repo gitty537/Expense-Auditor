@@ -1,101 +1,139 @@
 {% extends 'base.html' %}
+{% block title %}Dashboard — Expense Auditor{% endblock %}
 
 {% block content %}
-<div class="py-5 mb-4 bg-white rounded-4 shadow-sm hero-card">
-    <div class="row align-items-center">
-        <div class="col-lg-7">
-            <h1 class="display-5 fw-bold">FinTech Expense Auditor</h1>
-            <p class="lead text-secondary">A modern expense management dashboard for receipts, rules, audits, and notifications.</p>
-            <div class="mt-4">
-                <a class="btn btn-primary btn-lg me-2" href="/receipts/">View Receipts</a>
-                <a class="btn btn-outline-primary btn-lg" href="/policies/">View Policies</a>
+
+<!-- ── HERO ── -->
+<section class="hero-section">
+    <div class="hero-inner">
+        <div class="hero-left fade-up fade-up-1">
+            <span class="section-label">Intelligent Expense Management</span>
+            <h1 class="hero-display">
+                Auditing Your<br>
+                <span class="lime-block">Financial</span><br>
+                Clarity.
+            </h1>
+            <p class="hero-sub">A unified platform that brings your expense submissions, receipt processing, policy compliance, and audit trail together — built for finance teams, managers, and auditors.</p>
+            <div class="hero-cta-group">
+                <a href="/receipts/" class="btn-lime lg">View Receipts</a>
+                <a href="/audit/" class="btn-outline-dark-ea lg">Audit Dashboard</a>
             </div>
         </div>
-        <div class="col-lg-5 text-center mt-4 mt-lg-0">
-            <div class="dashboard-summary p-4 rounded-4 bg-gradient-light">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-muted">Receipts</span>
-                    <strong>{{ recent_receipts|length }}</strong>
+
+        <div class="hero-panel fade-up fade-up-2">
+            <div class="panel-label">System Overview</div>
+            <h3>Real-time compliance visibility</h3>
+            <div class="hero-stat-grid">
+                <div class="hero-stat">
+                    <div class="stat-num">OCR</div>
+                    <div class="stat-label">Automated receipt extraction</div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-muted">Policies</span>
-                    <strong>{{ active_policies|length }}</strong>
+                <div class="hero-stat">
+                    <div class="stat-num">AI</div>
+                    <div class="stat-label">Policy-aware audit decisions</div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted">Decisions</span>
-                    <strong>{{ recent_decisions|length }}</strong>
+                <div class="hero-stat">
+                    <div class="stat-num">4</div>
+                    <div class="stat-label">Distinct access roles</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-num">100%</div>
+                    <div class="stat-label">Full audit trail retained</div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row g-4 mb-4">
-    <div class="col-md-6 col-xl-3">
-        <div class="stat-card shadow-sm p-4 rounded-4">
-            <div class="small text-muted">Companies</div>
-            <div class="display-6 fw-bold">{{ company_count }}</div>
-        </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="stat-card shadow-sm p-4 rounded-4">
-            <div class="small text-muted">Employees</div>
-            <div class="display-6 fw-bold">{{ employee_count }}</div>
-        </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="stat-card shadow-sm p-4 rounded-4">
-            <div class="small text-muted">Active Policies</div>
-            <div class="display-6 fw-bold">{{ active_policies|length }}</div>
-        </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="stat-card shadow-sm p-4 rounded-4">
-            <div class="small text-muted">Recent Decisions</div>
-            <div class="display-6 fw-bold">{{ recent_decisions|length }}</div>
-        </div>
-    </div>
-</div>
-<div class="row g-4">
-    <div class="col-lg-6">
-        <div class="card shadow-sm rounded-4 overflow-hidden">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Recent Receipt Uploads</h5>
+</section>
+
+<!-- ── FEATURES (3-col) ── -->
+<section class="page-section">
+    <div class="container-ea">
+        <span class="section-label">Core Capabilities</span>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;letter-spacing:-0.025em;margin-bottom:2.5rem;max-width:540px;line-height:1.2;">
+            Everything your finance team needs in one place
+        </h2>
+        <div class="feature-grid">
+            <div class="feature-block fade-up fade-up-1">
+                <div class="feat-num">01</div>
+                <h4>Receipt Intelligence</h4>
+                <p>Upload expense receipts and leverage OCR to extract key data automatically. Track processing status, validate file quality, and maintain a clean audit-ready history of every claim.</p>
             </div>
-            <div class="list-group list-group-flush">
-                {% for upload in recent_receipts %}
-                <div class="list-group-item receipt-row">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">{{ upload.employee.user.username }}</h6>
-                            <p class="mb-1 text-muted">{{ upload.original_file.name|default:'No file' }}</p>
-                        </div>
-                        <span class="badge bg-secondary text-uppercase">{{ upload.processing_status }}</span>
-                    </div>
-                    <small class="text-muted">Uploaded {{ upload.upload_timestamp|date:'M d, Y H:i' }}</small>
+            <div class="feature-block fade-up fade-up-2">
+                <div class="feat-num">02</div>
+                <h4>Policy Automation</h4>
+                <p>Define and enforce dynamic expense rules across regions, departments, and expense categories. Policy documents are version-controlled and instantly applied to incoming claims.</p>
+            </div>
+            <div class="feature-block fade-up fade-up-3">
+                <div class="feat-num">03</div>
+                <h4>Audit Confidence</h4>
+                <p>Monitor every compliance decision, review AI-generated explanations, flag anomalies, and maintain a full unbroken chain of audit records for every submitted expense claim.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── DISTINCTION (dark section) ── -->
+<section class="page-section dark">
+    <div class="container-ea">
+        <div class="distinction-grid">
+            <div class="distinction-left fade-up fade-up-1">
+                <span class="section-label lime">The Expense Auditor Advantage</span>
+                <h2>Built for precision at every stage of the expense lifecycle</h2>
+                <p>Whether you're an employee filing a claim, a finance auditor reviewing receipts, or a manager enforcing spend limits — Expense Auditor gives each role exactly the tools they need.</p>
+                <div style="margin-top:2rem;">
+                    <a href="/audit/" class="btn-lime">Explore Audit Dashboard</a>
                 </div>
-                {% empty %}
-                <div class="list-group-item">No receipt uploads yet.</div>
-                {% endfor %}
             </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card shadow-sm rounded-4 overflow-hidden">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Active Policies</h5>
-            </div>
-            <div class="list-group list-group-flush">
-                {% for policy in active_policies %}
-                <div class="list-group-item">
-                    <h6 class="mb-1">{{ policy.version }}</h6>
-                    <p class="mb-1 text-muted">Effective {{ policy.effective_date }}</p>
-                    <span class="badge bg-success">Active</span>
+            <div class="distinction-right fade-up fade-up-2">
+                <div class="distinction-item">
+                    <h5>End-to-end receipt traceability</h5>
+                    <p>Every upload is timestamped, linked to a specific employee, and tracked through OCR processing, policy checks, and final audit resolution.</p>
                 </div>
-                {% empty %}
-                <div class="list-group-item">No active policies found.</div>
-                {% endfor %}
+                <div class="distinction-item">
+                    <h5>Policy versioning & enforcement</h5>
+                    <p>Keep multiple policy documents side-by-side. Activate or archive rules with a single toggle and watch the compliance engine adapt in real time.</p>
+                </div>
+                <div class="distinction-item">
+                    <h5>Role-gated access control</h5>
+                    <p>Employees, Finance Auditors, Finance Managers, and Audit Viewers each see a tailored view with permissions appropriate to their function.</p>
+                </div>
+                <div class="distinction-item">
+                    <h5>Notification engine</h5>
+                    <p>Automated status updates, escalation alerts, and approval notifications are dispatched the moment a claim moves through the workflow.</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+
+<!-- ── QUICK ACTIONS + CTA ── -->
+<section class="page-section light-gray">
+    <div class="container-ea">
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:2.5rem;align-items:start;">
+            <div class="fade-up fade-up-1">
+                <span class="section-label">Workflow</span>
+                <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;letter-spacing:-0.025em;line-height:1.2;margin-bottom:1rem;">
+                    From submission to approval — fully automated
+                </h2>
+                <p style="font-size:1rem;color:var(--muted);line-height:1.7;margin-bottom:2rem;max-width:500px;">
+                    Expense Auditor handles the heavy lifting. Employees upload receipts, the OCR engine extracts data, policies are applied automatically, and auditors receive a clean decision-ready summary.
+                </p>
+                <div style="display:flex;gap:12px;">
+                    <a href="/receipts/" class="btn-lime">Upload a Receipt</a>
+                    <a href="/policies/" class="btn-outline-dark-ea">Review Policies</a>
+                </div>
+            </div>
+            <div class="quick-actions fade-up fade-up-2">
+                <h5>Quick Actions</h5>
+                <a href="/receipts/" class="quick-link">Upload receipt <span class="arrow">&#8594;</span></a>
+                <a href="/policies/" class="quick-link">Review active policies <span class="arrow">&#8594;</span></a>
+                <a href="/audit/" class="quick-link">View audit decisions <span class="arrow">&#8594;</span></a>
+                <a href="/notifications/" class="quick-link">Check alerts <span class="arrow">&#8594;</span></a>
+                <a href="/admin/" class="quick-link">Admin panel <span class="arrow">&#8594;</span></a>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from rest_framework import routers
 
@@ -18,5 +19,7 @@ urlpatterns = [
     path('policies/', policy_list, name='policy_list'),
     path('audit/', audit_dashboard, name='audit_dashboard'),
     path('notifications/', notification_list, name='notification_list'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('admin/', admin.site.urls),
 ]

@@ -1,35 +1,61 @@
 {% extends 'base.html' %}
+{% block title %}Notifications — Expense Auditor{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
-    <div>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container-ea">
+        <span class="section-label lime">Alerts &amp; Updates</span>
         <h1>Notifications</h1>
-        <p class="text-muted">Manage alerts, approvals, and escalations across the audit workflow.</p>
+        <p>Manage alerts, approvals, escalation notices, and status changes across the audit workflow.</p>
     </div>
-    <div class="btn-group" role="group" aria-label="Notification filters">
-        <button type="button" class="btn btn-outline-primary notification-filter-btn active" data-filter="all">All</button>
-        <button type="button" class="btn btn-outline-primary notification-filter-btn" data-filter="status_change">Status</button>
-        <button type="button" class="btn btn-outline-primary notification-filter-btn" data-filter="requires_action">Action</button>
-        <button type="button" class="btn btn-outline-primary notification-filter-btn" data-filter="escalation">Escalation</button>
-    </div>
-</div>
-<div class="list-group" id="notificationList">
-    {% for notification in notifications %}
-    <div class="list-group-item list-group-item-action mb-3 notification-item" data-type="{{ notification.notification_type }}">
-        <div class="d-flex w-100 justify-content-between align-items-start gap-3">
-            <div>
-                <h5 class="mb-1">{{ notification.subject }}</h5>
-                <p class="mb-1">{{ notification.body|truncatechars:160 }}</p>
-                <small class="text-muted">To {{ notification.recipient.username }} · {{ notification.delivery_method|title }}</small>
-            </div>
-            <div class="text-end">
-                <span class="badge bg-{{ notification.email_delivery_status|lower|replace:'pending','secondary'|replace:'sent','success'|replace:'bounced','danger'|replace:'failed','warning' }} text-uppercase">{{ notification.email_delivery_status }}</span>
-                <div class="mt-2 text-muted small">{{ notification.created_at|date:'M d, Y H:i' }}</div>
-            </div>
+</section>
+
+<!-- Content -->
+<section class="page-section compact">
+    <div class="container-ea">
+
+        <!-- Filter Bar -->
+        <div class="notif-filter-bar">
+            <button class="notif-filter-btn active" data-filter="all">All Notifications</button>
+            <button class="notif-filter-btn" data-filter="status_change">Status Change</button>
+            <button class="notif-filter-btn" data-filter="requires_action">Requires Action</button>
+            <button class="notif-filter-btn" data-filter="escalation">Escalation</button>
         </div>
+
+        <!-- Notification List -->
+        <div id="notificationList">
+            {% for notification in notifications %}
+            <div class="notification-item-ea notification-item" data-type="{{ notification.notification_type }}">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:200px;">
+                        <h5>{{ notification.subject }}</h5>
+                        <p>{{ notification.body|truncatechars:180 }}</p>
+                        <span class="notif-meta">
+                            To <strong>{{ notification.recipient.username }}</strong>
+                            &middot; {{ notification.delivery_method|title }}
+                            &middot; {{ notification.notification_type|title }}
+                        </span>
+                    </div>
+                    <div style="text-align:right;flex-shrink:0;">
+                        <span class="badge-ea {{ notification.email_delivery_status|lower }}">
+                            {{ notification.email_delivery_status }}
+                        </span>
+                        <div class="notif-meta" style="margin-top:6px;">{{ notification.created_at|date:'M d, Y H:i' }}</div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align:center;padding:4rem 2rem;color:var(--muted);">
+                <i class="bi bi-bell" style="font-size:2.5rem;display:block;margin-bottom:1rem;opacity:0.3;"></i>
+                <p style="font-size:1rem;font-weight:600;">No notifications available.</p>
+                <p style="font-size:0.875rem;">Notifications will appear here when claims move through the audit workflow.</p>
+            </div>
+            {% endfor %}
+        </div>
+
     </div>
-    {% empty %}
-    <div class="list-group-item">No notifications available.</div>
-    {% endfor %}
-</div>
+</section>
+
 {% endblock %}

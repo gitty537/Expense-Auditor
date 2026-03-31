@@ -1,61 +1,93 @@
 {% extends 'base.html' %}
+{% block title %}Policies — Expense Auditor{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
-    <div>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container-ea">
+        <span class="section-label lime">Compliance Rules</span>
         <h1>Policies</h1>
-        <p class="text-muted">Browse policy versions, active rules, and document details.</p>
+        <p>Browse active policy documents, version history, and the full set of expense rules applied to incoming claims.</p>
     </div>
-    <div class="w-100 w-md-auto">
-        <input id="policySearchInput" class="form-control form-control-lg" type="search" placeholder="Search versions, categories, or rule names">
-    </div>
-</div>
-<div class="row g-4">
-    <div class="col-lg-6">
-        <div class="card shadow-sm rounded-4 overflow-hidden">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Policy Documents</h5>
-            </div>
-            <div class="list-group list-group-flush" id="policyDocumentsList">
-                {% for policy in policies %}
-                <div class="list-group-item policy-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">{{ policy.version }}</h6>
-                            <p class="mb-1 text-muted">Effective {{ policy.effective_date }}</p>
-                            <small class="text-muted">{{ policy.pdf_file.name|default:'No document uploaded' }}</small>
-                        </div>
-                        <span class="badge bg-success">{{ policy.is_active|yesno:'Active,Inactive' }}</span>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="list-group-item">No policy documents available.</div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card shadow-sm rounded-4 overflow-hidden">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Policy Rules</h5>
-            </div>
-            <div class="list-group list-group-flush" id="policyRulesList">
-                {% for rule in rules %}
-                <div class="list-group-item policy-card">
-                    <div class="d-flex justify-content-between align-items-start gap-3">
-                        <div>
-                            <h6 class="mb-1">{{ rule.constraint_name }}</h6>
-                            <p class="mb-1 text-muted">{{ rule.category }} · {{ rule.region }} · {{ rule.rule_type }}</p>
-                            <p class="mb-0 text-muted">{{ rule.constraint_value }}</p>
-                        </div>
-                        <span class="badge bg-primary">{{ rule.region }}</span>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="list-group-item">No policy rules available.</div>
-                {% endfor %}
-            </div>
-        </div>
+</section>
+
+<!-- Search Bar -->
+<div class="search-bar-row">
+    <div class="container-ea" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <input
+            id="policySearchInput"
+            class="search-input-ea"
+            type="search"
+            placeholder="Search versions, categories, or rule names&hellip;"
+        >
+        <span style="font-size:0.8rem;color:var(--muted);">Filter results in real time</span>
     </div>
 </div>
+
+<!-- Two-column layout: Documents + Rules -->
+<section class="page-section compact">
+    <div class="container-ea">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+            <!-- Policy Documents -->
+            <div>
+                <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">
+                    Policy Documents
+                </p>
+                <div class="policy-panel">
+                    <div class="policy-panel-header">Document Library</div>
+                    <div id="policyDocumentsList">
+                        {% for policy in policies %}
+                        <div class="policy-item policy-card">
+                            <div>
+                                <h6>{{ policy.version }}</h6>
+                                <p>Effective {{ policy.effective_date }}</p>
+                                <small>{{ policy.pdf_file.name|default:'No document uploaded' }}</small>
+                            </div>
+                            {% if policy.is_active %}
+                            <span class="badge-active">Active</span>
+                            {% else %}
+                            <span class="badge-inactive">Inactive</span>
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                        <div class="policy-item">
+                            <p style="color:var(--muted);font-size:0.875rem;">No policy documents available.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Policy Rules -->
+            <div>
+                <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">
+                    Policy Rules
+                </p>
+                <div class="policy-panel">
+                    <div class="policy-panel-header">Active Rule Set</div>
+                    <div id="policyRulesList">
+                        {% for rule in rules %}
+                        <div class="policy-item policy-card">
+                            <div>
+                                <h6>{{ rule.constraint_name }}</h6>
+                                <p>{{ rule.category }} &middot; {{ rule.rule_type }}</p>
+                                <small>{{ rule.constraint_value }}</small>
+                            </div>
+                            <span class="badge-region">{{ rule.region }}</span>
+                        </div>
+                        {% empty %}
+                        <div class="policy-item">
+                            <p style="color:var(--muted);font-size:0.875rem;">No policy rules available.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
 {% endblock %}

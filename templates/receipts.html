@@ -1,45 +1,81 @@
 {% extends 'base.html' %}
+{% block title %}Receipts — Expense Auditor{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
-    <div>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container-ea">
+        <span class="section-label lime">Expense Claims</span>
         <h1>Receipts</h1>
-        <p class="text-muted">Search and review image uploads with OCR status and quality checks.</p>
+        <p>Search and review image uploads with OCR extraction status, file quality checks, and processing history.</p>
     </div>
-    <div class="w-100 w-md-auto">
-        <input id="receiptSearchInput" class="form-control form-control-lg" type="search" placeholder="Search receipts by employee, status, or file name">
+</section>
+
+<!-- Search Bar -->
+<div class="search-bar-row">
+    <div class="container-ea" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <input
+            id="receiptSearchInput"
+            class="search-input-ea"
+            type="search"
+            placeholder="Search by employee, status, or file name&hellip;"
+        >
+        <span style="font-size:0.8rem;color:var(--muted);">Filter results below in real time</span>
     </div>
 </div>
-<div class="table-responsive shadow-sm rounded-4 bg-white overflow-hidden">
-    <table class="table table-hover mb-0 align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Employee</th>
-                <th>Status</th>
-                <th>Receipt</th>
-                <th>Size</th>
-                <th>Uploaded</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for upload in uploads %}
-            <tr class="receipt-row">
-                <td>{{ upload.id }}</td>
-                <td>{{ upload.employee.user.username }}</td>
-                <td>
-                    <span class="badge badge-status {{ upload.processing_status }}">{{ upload.processing_status }}</span>
-                </td>
-                <td>{{ upload.original_file.name|default:'n/a' }}</td>
-                <td>{{ upload.file_size|default:'0' }} bytes</td>
-                <td>{{ upload.upload_timestamp|date:'M d, Y H:i' }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="text-center py-4">No receipt uploads found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+
+<!-- Data Table -->
+<section class="page-section compact">
+    <div class="container-ea">
+
+        <!-- Summary strip -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:10px;">
+            <p style="font-size:0.8rem;color:var(--muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;">
+                All Receipt Uploads
+            </p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <span class="badge-ea pending">Pending</span>
+                <span class="badge-ea processing">Processing</span>
+                <span class="badge-ea completed">Completed</span>
+                <span class="badge-ea failed">Failed</span>
+            </div>
+        </div>
+
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>Status</th>
+                        <th>Receipt File</th>
+                        <th>File Size</th>
+                        <th>Uploaded</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for upload in uploads %}
+                    <tr class="receipt-row">
+                        <td>{{ upload.id }}</td>
+                        <td style="font-weight:600;">{{ upload.employee.user.username }}</td>
+                        <td><span class="badge-ea {{ upload.processing_status }}">{{ upload.processing_status }}</span></td>
+                        <td style="font-family:monospace;font-size:0.8rem;">{{ upload.original_file.name|default:'—' }}</td>
+                        <td>{{ upload.file_size|default:'0' }} <span style="color:var(--muted);font-size:0.78rem;">bytes</span></td>
+                        <td>{{ upload.upload_timestamp|date:'M d, Y H:i' }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:3rem;color:var(--muted);">
+                            <i class="bi bi-receipt" style="font-size:2rem;display:block;margin-bottom:0.75rem;opacity:0.3;"></i>
+                            No receipt uploads found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

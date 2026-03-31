@@ -1,41 +1,80 @@
 {% extends 'base.html' %}
+{% block title %}Audit Dashboard — Expense Auditor{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
-    <div>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container-ea">
+        <span class="section-label lime">Compliance Engine</span>
         <h1>Audit Dashboard</h1>
-        <p class="text-muted">Recent decisions and risk signals from the compliance engine.</p>
+        <p>Monitor compliance decisions, review AI-generated explanations, confidence scores, and risk signals from the audit engine.</p>
     </div>
-    <div class="w-100 w-md-auto">
-        <input id="auditSearchInput" class="form-control form-control-lg" type="search" placeholder="Search audit decisions by status or explanation">
+</section>
+
+<!-- Search Bar -->
+<div class="search-bar-row">
+    <div class="container-ea" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <input
+            id="auditSearchInput"
+            class="search-input-ea"
+            type="search"
+            placeholder="Search by status or explanation&hellip;"
+        >
+        <span style="font-size:0.8rem;color:var(--muted);">Filter decisions in real time</span>
     </div>
 </div>
-<div class="table-responsive shadow-sm rounded-4 bg-white overflow-hidden">
-    <table class="table table-hover mb-0 align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Status</th>
-                <th>Confidence</th>
-                <th>Explanation</th>
-                <th>Created</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for decision in decisions %}
-            <tr class="audit-row">
-                <td>{{ decision.id }}</td>
-                <td><span class="badge badge-status {{ decision.final_status }}">{{ decision.final_status }}</span></td>
-                <td>{{ decision.approval_confidence_score|floatformat:2 }}</td>
-                <td>{{ decision.generated_explanation|truncatechars:80 }}</td>
-                <td>{{ decision.created_at|date:'M d, Y H:i' }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" class="text-center py-4">No audit decisions available.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+
+<!-- Decision Status Legend -->
+<section class="page-section compact">
+    <div class="container-ea">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:10px;">
+            <p style="font-size:0.8rem;color:var(--muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;">
+                Audit Decisions
+            </p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <span class="badge-ea approved">Approved</span>
+                <span class="badge-ea flagged">Flagged</span>
+                <span class="badge-ea rejected">Rejected</span>
+            </div>
+        </div>
+
+        <div class="data-table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Final Status</th>
+                        <th>Confidence Score</th>
+                        <th>Explanation</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for decision in decisions %}
+                    <tr class="audit-row">
+                        <td>{{ decision.id }}</td>
+                        <td><span class="badge-ea {{ decision.final_status }}">{{ decision.final_status }}</span></td>
+                        <td>
+                            <span style="font-weight:700;">{{ decision.approval_confidence_score|floatformat:2 }}</span>
+                            <span style="color:var(--muted);font-size:0.78rem;"> / 1.00</span>
+                        </td>
+                        <td style="max-width:380px;font-size:0.85rem;color:var(--muted);">{{ decision.generated_explanation|truncatechars:100 }}</td>
+                        <td>{{ decision.created_at|date:'M d, Y H:i' }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;padding:3rem;color:var(--muted);">
+                            <i class="bi bi-shield-check" style="font-size:2rem;display:block;margin-bottom:0.75rem;opacity:0.3;"></i>
+                            No audit decisions available.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
 {% endblock %}
