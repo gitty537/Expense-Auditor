@@ -62,10 +62,7 @@ class EmployeeProfile(models.Model):
 class Role(models.Model):
     ROLE_CHOICES = [
         ('employee', 'Employee'),
-        ('finance_auditor', 'Finance Auditor'),
-        ('finance_manager', 'Finance Manager'),
         ('admin', 'Admin'),
-        ('audit_viewer', 'Audit Viewer'),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='roles')

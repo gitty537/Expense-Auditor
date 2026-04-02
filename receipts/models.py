@@ -17,6 +17,8 @@ class ReceiptUpload(models.Model):
     original_file = models.FileField(upload_to='receipts/originals/')
     file_size = models.PositiveIntegerField()
     upload_timestamp = models.DateTimeField(auto_now_add=True)
+    expense_date = models.DateField(null=True, blank=True)
+    reason = models.TextField(null=True, blank=True)
     processing_status = models.CharField(max_length=20, choices=ProcessingStatus.choices, default=ProcessingStatus.PENDING)
     processing_error_message = models.TextField(null=True, blank=True)
     image_quality_score = models.FloatField(null=True, blank=True)

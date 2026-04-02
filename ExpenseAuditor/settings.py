@@ -79,7 +79,7 @@ INSTALLED_APPS = [
     "employees",
     "notifications",
     "policies",
-    "receipts",
+    "receipts.apps.ReceiptsConfig",
 ]
 
 MIDDLEWARE = [
@@ -166,13 +166,20 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Allow large policy PDF uploads (up to 100 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 105 * 1024 * 1024   # 105 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE  = 105 * 1024 * 1024  # 105 MB
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
 LOGIN_URL = 'login'
 
 REST_FRAMEWORK = {

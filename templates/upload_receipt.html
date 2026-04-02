@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% block title %}Upload Document — Expense Auditor{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container-ea">
+        <span class="section-label lime">
+            {% if is_employee %}Submit Claim{% elif is_admin %}Admin Tools{% else %}Documents{% endif %}
+        </span>
+        <h1>Upload Document</h1>
+        <p>
+            {% if is_employee and is_admin %}
+                Switch between submitting a receipt or uploading a company policy document.
+            {% elif is_employee %}
+                Submit your expense receipts for review.
+            {% elif is_admin %}
+                Upload your company expense policy document for employees to follow.
+            {% else %}
+                No upload permissions are assigned to your account yet.
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<section class="page-section compact">
+    <div class="container-ea">
+
+        <!-- Flash messages -->
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert-msg alert-error">{{ message }}</div>
+                {% elif message.tags == 'warning' %}
+                    <div class="alert-msg alert-warning">{{ message }}</div>
+                {% else %}
+                    <div class="alert-msg alert-success">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        {% if not is_employee and not is_admin %}
+            <!-- No role assigned -->
+            <div class="upload-card" style="text-align:center; padding:3rem;">
+                <i class="bi bi-shield-exclamation" style="font-size:3rem; color:var(--muted);"></i>
+                <h3 style="color:var(--text-light); margin-top:1rem;">No Upload Access</h3>
+                <p style="color:var(--muted);">Your account has not been assigned an upload role yet.<br>Please contact your system administrator.</p>
+            </div>
+        {% else %}
+            <div class="upload-card">
+
+                <!-- Tab bar — only show if user has BOTH roles (edge case) -->
+                {% if is_employee and is_admin %}
+                <div class="upload-tabs">
+                    <button type="button" id="tab-receipt" class="upload-tab active" onclick="switchTab('receipt')">
+                        <i class="bi bi-receipt"></i> Upload Receipt
+                    </button>
+                    <button type="button" id="tab-policy" class="upload-tab" onclick="switchTab('policy')">
+                        <i class="bi bi-file-earmark-text"></i> Upload Policy
+                    </button>
+                </div>
+                {% elif is_employee %}
+                <div class="upload-tab-header">
+                    <i class="bi bi-receipt" style="color:var(--lime-primary);"></i>
+                    <span>Employee — Receipt Submission</span>
+                </div>
+                {% elif is_admin %}
+                <div class="upload-tab-header">
+                    <i class="bi bi-file-earmark-text" style="color:var(--lime-primary);"></i>
+                    <span>Admin — Policy Document Upload</span>
+                </div>
+                {% endif %}
+
+                <!-- ── RECEIPT FORM ── -->
+                {% if is_employee %}
+                <form id="form-receipt"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      action="{% url 'upload_receipt' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="upload_type" value="receipt">
+
+                    <div class="form-group-ea">
+                        <label>Receipt File <span class="required">*</span></label>
+                        <input type="file" name="file" id="receipt-file"
+                               accept=".pdf,.jpg,.jpeg,.png" required
+                               class="file-input">
+                        <small class="field-hint">PDF, JPG or PNG — maximum 5 MB.</small>
+                    </div>
+
+                    <div class="form-group-ea">
+                        <label>Expense Date <span class="required">*</span></label>
+                        <input type="date" name="expense_date" required class="text-input">
+                    </div>
+
+                    <div class="form-group-ea">
+                        <label>Reason for Expense <span class="required">*</span></label>
+                        <textarea name="reason" rows="3" required
+                                  placeholder="E.g., Client dinner with ABC Corp"
+                                  class="textarea-input"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-ea btn-full">
+                        <i class="bi bi-cloud-upload"></i> Submit Receipt
+                    </button>
+                </form>
+                {% endif %}
+
+                <!-- ── POLICY FORM ── -->
+                {% if is_admin %}
+                <form id="form-policy"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      action="{% url 'upload_receipt' %}"
+                      {% if is_employee %}style="display:none;"{% endif %}>
+                    {% csrf_token %}
+                    <input type="hidden" name="upload_type" value="policy">
+
+                    <div class="form-group-ea">
+                        <label>Policy Document (PDF) <span class="required">*</span></label>
+                        <input type="file" name="file" id="policy-file"
+                               accept=".pdf" required class="file-input">
+                        <small class="field-hint">PDF only — up to 100 MB. Supports 100+ page documents.</small>
+                    </div>
+
+                    <div class="form-group-ea">
+                        <label>Policy Version <span class="required">*</span></label>
+                        <input type="text" name="version" required
+                               placeholder="e.g. 2026-v2"
+                               class="text-input">
+                        <small class="field-hint">Must be unique. Leave blank to auto-generate.</small>
+                    </div>
+
+                    <div class="form-group-ea">
+                        <label>Effective Date <span class="required">*</span></label>
+                        <input type="date" name="effective_date" required class="text-input">
+                    </div>
+
+                    <button type="submit" class="btn-ea btn-full btn-outline">
+                        <i class="bi bi-cloud-arrow-up"></i> Upload Policy Document
+                    </button>
+                </form>
+                {% endif %}
+
+            </div><!-- /.upload-card -->
+        {% endif %}
+
+    </div>
+</section>
+
+<style>
+.upload-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 620px;
+    margin: 0 auto;
+}
+.upload-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+.upload-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.upload-tab.active,
+.upload-tab:hover {
+    color: var(--lime-primary);
+    border-bottom-color: var(--lime-primary);
+}
+.upload-tab-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    color: var(--text-light);
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.75rem;
+    font-size: 0.95rem;
+}
+.form-group-ea {
+    margin-bottom: 1.5rem;
+}
+.form-group-ea label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+.required { color: #f44336; }
+.file-input,
+.text-input,
+.textarea-input {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-family: inherit;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    transition: border-color .2s;
+}
+.file-input:focus,
+.text-input:focus,
+.textarea-input:focus {
+    outline: none;
+    border-color: var(--lime-primary);
+}
+.field-hint {
+    color: var(--muted);
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+}
+.btn-full { width: 100%; justify-content: center; padding: 1rem; font-size: 1rem; }
+.btn-outline { background: transparent; border: 1px solid var(--lime-primary); color: var(--lime-primary); }
+.alert-msg {
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.alert-error   { background: rgba(244,67,54,.1); border: 1px solid rgba(244,67,54,.4); color: #f44336; }
+.alert-warning { background: rgba(255,152,0,.1);  border: 1px solid rgba(255,152,0,.4);  color: #ff9800; }
+.alert-success { background: rgba(118,185,0,.1);  border: 1px solid rgba(118,185,0,.4);  color: var(--lime-primary); }
+</style>
+
+<script>
+function switchTab(tab) {
+    const receiptForm = document.getElementById('form-receipt');
+    const policyForm  = document.getElementById('form-policy');
+    const tabReceipt  = document.getElementById('tab-receipt');
+    const tabPolicy   = document.getElementById('tab-policy');
+
+    if (tab === 'receipt') {
+        if (receiptForm) receiptForm.style.display = 'block';
+        if (policyForm)  policyForm.style.display  = 'none';
+        if (tabReceipt)  tabReceipt.classList.add('active');
+        if (tabPolicy)   tabPolicy.classList.remove('active');
+    } else {
+        if (receiptForm) receiptForm.style.display = 'none';
+        if (policyForm)  policyForm.style.display  = 'block';
+        if (tabPolicy)   tabPolicy.classList.add('active');
+        if (tabReceipt)  tabReceipt.classList.remove('active');
+    }
+}
+</script>
+{% endblock %}

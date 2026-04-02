@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Register User — Expense Auditor{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container-ea">
+        <span class="section-label lime">Admin Tools</span>
+        <h1>Register New User</h1>
+        <p>Register an employee or an admin for your workspace.</p>
+    </div>
+</section>
+
+<section class="page-section compact">
+    <div class="container-ea">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}" style="background:var(--card-bg); border:1px solid var(--border-color); padding: 1rem; border-radius: 8px; margin-bottom:1rem; color: {% if message.tags == 'error' %}#f44336{% else %}var(--lime-primary){% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:2rem; max-width:600px; margin: 0 auto;">
+            <form method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-light);">Username <span style="color:#f44336;">*</span></label>
+                    <input type="text" name="username" required style="width:100%; padding:0.75rem; background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light); accent-color:var(--lime-primary);">
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-light);">Email Address</label>
+                    <input type="email" name="email" style="width:100%; padding:0.75rem; background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light); accent-color:var(--lime-primary);">
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-light);">Password <span style="color:#f44336;">*</span></label>
+                    <input type="password" name="password" required style="width:100%; padding:0.75rem; background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light); accent-color:var(--lime-primary);">
+                </div>
+
+                <div style="margin-bottom:2rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-light);">Access Role <span style="color:#f44336;">*</span></label>
+                    <select name="role" required style="width:100%; padding:0.75rem; background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light);">
+                        <option value="employee">Employee</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-ea" style="width:100%; justify-content:center; padding:1rem; font-size:1.1rem; background:var(--lime-primary); color:black; border:none; border-radius:8px; cursor:pointer;">Register User</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

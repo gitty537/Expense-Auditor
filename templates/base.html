@@ -28,6 +28,9 @@
         <li><a href="/policies/" id="nav-policies">Policies</a></li>
         <li><a href="/audit/" id="nav-audit">Audit</a></li>
         <li><a href="/notifications/" id="nav-notifications">Notifications</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="/upload/" id="nav-upload" style="color:var(--lime);font-weight:700;">⬆ Upload</a></li>
+        {% endif %}
     </ul>
 
     <div class="ea-nav-cta">
@@ -38,7 +41,17 @@
             </a>
             <div class="ea-dropdown-menu">
                 <a href="/">Dashboard</a>
-                <a href="/logout/" class="logout-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                {% for role in user.roles.all %}
+                {% if role.role == 'admin' %}
+                <a href="/register/">Register User</a>
+                {% endif %}
+                {% endfor %}
+                <form method="post" action="/logout/" style="margin:0;padding:0;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-link" style="display:block;width:100%;background:none;border:none;cursor:pointer;text-align:left;padding:0;color:inherit;font:inherit;">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </form>
             </div>
         </div>
         {% else %}
@@ -89,6 +102,9 @@
                     <li><a href="/policies/">Policies</a></li>
                     <li><a href="/audit/">Audit</a></li>
                     <li><a href="/notifications/">Notifications</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="/upload/">Upload</a></li>
+                    {% endif %}
                 </ul>
             </div>
 
@@ -96,9 +112,7 @@
                 <h6>Roles</h6>
                 <ul>
                     <li><a href="#">Employee</a></li>
-                    <li><a href="#">Finance Auditor</a></li>
-                    <li><a href="#">Finance Manager</a></li>
-                    <li><a href="#">Audit Viewer</a></li>
+                    <li><a href="#">Administrator</a></li>
                 </ul>
             </div>
 
@@ -107,7 +121,12 @@
                 <ul>
                     <li><a href="/admin/">Admin Panel</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="/logout/">Sign Out</a></li>
+                    <li>
+                        <form method="post" action="/logout/" style="margin:0;padding:0;display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background:none;border:none;cursor:pointer;padding:0;color:inherit;font:inherit;">Sign Out</button>
+                        </form>
+                    </li>
                     {% else %}
                     <li><a href="/login/">Sign In</a></li>
                     {% endif %}

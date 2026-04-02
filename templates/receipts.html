@@ -59,7 +59,12 @@
                     <tr class="receipt-row">
                         <td>{{ upload.id }}</td>
                         <td style="font-weight:600;">{{ upload.employee.user.username }}</td>
-                        <td><span class="badge-ea {{ upload.processing_status }}">{{ upload.processing_status }}</span></td>
+                        <td>
+                            <span class="badge-ea {{ upload.processing_status }}">{{ upload.processing_status }}</span>
+                            {% if upload.processing_error_message %}
+                                <div style="font-size:0.75rem; color:#f44336; margin-top:0.25rem;">{{ upload.processing_error_message }}</div>
+                            {% endif %}
+                        </td>
                         <td style="font-family:monospace;font-size:0.8rem;">{{ upload.original_file.name|default:'—' }}</td>
                         <td>{{ upload.file_size|default:'0' }} <span style="color:var(--muted);font-size:0.78rem;">bytes</span></td>
                         <td>{{ upload.upload_timestamp|date:'M d, Y H:i' }}</td>
