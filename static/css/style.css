@@ -6,21 +6,60 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
 
 :root {
-    --black:     #0A0A0A;
-    --black-2:   #141414;
-    --black-3:   #1C1C1C;
-    --lime:      #C9FF47;
-    --lime-dim:  #a8d630;
-    --offwhite:  #F5F5F0;
+    /* Obsidian Palette - Higher Contrast */
+    --black:     #0D0D11;
+    --black-2:   #15151A;
+    --black-3:   #1D1D23;
+    --deep-bg:   #08080A;
+    
+    --lime:      #D1FF4D;
+    --lime-glow: rgba(209, 255, 77, 0.4);
+    --lime-dim:  #b6e42b;
+    
+    --offwhite:  #F9F9F7;
     --surface:   #FFFFFF;
-    --border:    rgba(10,10,10,0.10);
-    --muted:     #6B7280;
-    --text:      #0A0A0A;
+    --border:    rgba(255,255,255,0.08);
+    --border-light: rgba(0,0,0,0.08);
+    
+    --text-pure: #FFFFFF;
+    --text-high: rgba(255,255,255,0.95);
+    --text-muted: rgba(255,255,255,0.65);
+    
+    /* Utility */
+    --glass-bg:  rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
     --radius-sm: 6px;
     --radius-md: 12px;
     --radius-lg: 20px;
-    --transition: 0.22s ease;
+    --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 16px;
+}
+
+/* ── LIGHT MODE EA ── */
+.light-mode-ea {
+    --bg-main:      #F8F9FA;
+    --bg-surface:   #FFFFFF;
+    --text-primary: #1A1A1E;
+    --text-secondary: #4A4A52;
+    --text-muted:   #6C757D;
+    --border-soft:  rgba(0,0,0,0.06);
+    --glass-white:  rgba(255,255,255,0.7);
+    --shadow-soft:  0 10px 30px rgba(0,0,0,0.04);
+    --shadow-vibrant: 0 20px 40px rgba(209, 255, 77, 0.15);
+}
+
+.light-mode-ea body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+}
+
+.light-mode-ea .glass-card {
+    background: var(--glass-white);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: var(--shadow-soft);
+    border-radius: 20px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

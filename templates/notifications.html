@@ -1,61 +1,187 @@
 {% extends 'base.html' %}
-{% block title %}Notifications — Expense Auditor{% endblock %}
+{% block title %}Feed Terminal — Expense Auditor{% endblock %}
 
 {% block content %}
-
-<!-- Page Header -->
-<section class="page-header">
-    <div class="container-ea">
-        <span class="section-label lime">Alerts &amp; Updates</span>
-        <h1>Notifications</h1>
-        <p>Manage alerts, approvals, escalation notices, and status changes across the audit workflow.</p>
-    </div>
-</section>
-
-<!-- Content -->
-<section class="page-section compact">
-    <div class="container-ea">
-
-        <!-- Filter Bar -->
-        <div class="notif-filter-bar">
-            <button class="notif-filter-btn active" data-filter="all">All Notifications</button>
-            <button class="notif-filter-btn" data-filter="status_change">Status Change</button>
-            <button class="notif-filter-btn" data-filter="requires_action">Requires Action</button>
-            <button class="notif-filter-btn" data-filter="escalation">Escalation</button>
+<div class="feed-page-vn">
+    <!-- Header (Obsidian Night) -->
+    <section class="top-header-vn">
+        <div class="container-ea">
+            <span class="badge-vn">Authorized Feed</span>
+            <h1 class="vn-title">System <span class="vn-accent">Events</span></h1>
+            <p class="vn-subtitle">Real-time log of policy updates, claim status changes, and critical administrative actions within your workspace.</p>
         </div>
+    </section>
 
-        <!-- Notification List -->
-        <div id="notificationList">
-            {% for notification in notifications %}
-            <div class="notification-item-ea notification-item" data-type="{{ notification.notification_type }}">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
-                    <div style="flex:1;min-width:200px;">
-                        <h5>{{ notification.subject }}</h5>
-                        <p>{{ notification.body|truncatechars:180 }}</p>
-                        <span class="notif-meta">
-                            To <strong>{{ notification.recipient.username }}</strong>
-                            &middot; {{ notification.delivery_method|title }}
-                            &middot; {{ notification.notification_type|title }}
-                        </span>
-                    </div>
-                    <div style="text-align:right;flex-shrink:0;">
-                        <span class="badge-ea {{ notification.email_delivery_status|lower }}">
-                            {{ notification.email_delivery_status }}
-                        </span>
-                        <div class="notif-meta" style="margin-top:6px;">{{ notification.created_at|date:'M d, Y H:i' }}</div>
-                    </div>
+    <!-- Notifications List -->
+    <section class="page-section obsidian-bg">
+        <div class="container-ea">
+            
+            <div class="vn-table-header">
+                <h3>Latest Broadcasts</h3>
+                <div class="vn-legend">
+                    <span class="dot approved"></span> Success
+                    <span class="dot flagged"></span> Warning
+                    <span class="dot rejected"></span> Critical
                 </div>
             </div>
-            {% empty %}
-            <div style="text-align:center;padding:4rem 2rem;color:var(--muted);">
-                <i class="bi bi-bell" style="font-size:2.5rem;display:block;margin-bottom:1rem;opacity:0.3;"></i>
-                <p style="font-size:1rem;font-weight:600;">No notifications available.</p>
-                <p style="font-size:0.875rem;">Notifications will appear here when claims move through the audit workflow.</p>
+
+            <div class="vn-feed-wrap">
+                {% for notification in notifications %}
+                <div class="vn-feed-item {{ notification.notification_type }}">
+                    <div class="vn-feed-pre">
+                        <div class="vn-icon-box">
+                            {% if notification.notification_type == 'status_change' %}
+                                <i class="bi bi-arrow-repeat"></i>
+                            {% elif notification.notification_type == 'requires_action' %}
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                            {% elif notification.notification_type == 'escalation' %}
+                                <i class="bi bi-lightning-fill"></i>
+                            {% else %}
+                                <i class="bi bi-broadcast"></i>
+                            {% endif %}
+                        </div>
+                        <div class="vn-connector"></div>
+                    </div>
+                    
+                    <div class="vn-feed-card">
+                        <div class="vn-feed-header">
+                            <h4>{{ notification.subject }}</h4>
+                            <span class="vn-feed-time">{{ notification.created_at|date:'M d, Y H:i' }}</span>
+                        </div>
+                        <p class="vn-feed-body">{{ notification.body }}</p>
+                        <div class="vn-feed-meta">
+                            <div class="meta-tag">
+                                <i class="bi bi-person-circle"></i>
+                                <span>{{ notification.recipient.username }}</span>
+                            </div>
+                            <span class="meta-sep"></span>
+                            <div class="meta-tag">
+                                <i class="bi bi-layers-fill"></i>
+                                <span>{{ notification.notification_type|title }}</span>
+                            </div>
+                            <span class="meta-sep"></span>
+                            <div class="vn-delivery-pill {{ notification.email_delivery_status|lower }}">
+                                {{ notification.email_delivery_status }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="vn-empty-box">
+                    <i class="bi bi-cloud-slash"></i>
+                    <p>NO_ACTIVE_BROADCASTS_DETECTED.</p>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+
         </div>
+    </section>
+</div>
 
-    </div>
-</section>
+<style>
+/* ── FEED VN (PREMIUM OBSIDIAN) ── */
 
+.feed-page-vn { background: var(--vn-obsidian); }
+
+.vn-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--vn-border);
+}
+.vn-table-header h3 { font-size: 1.5rem; font-weight: 900; margin: 0; }
+
+.vn-legend { display: flex; gap: 2rem; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.5; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+.dot.approved { background: var(--vn-lime); box-shadow: var(--vn-glow); }
+.dot.flagged { background: #FFC107; }
+.dot.rejected { background: #F44336; }
+
+.vn-feed-wrap {
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.vn-feed-item {
+    display: flex;
+    gap: 2.5rem;
+}
+
+.vn-feed-pre {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.vn-icon-box {
+    width: 60px;
+    height: 60px;
+    background: var(--vn-carbon);
+    border: 1px solid var(--vn-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #FFF;
+    flex-shrink: 0;
+    transition: 0.3s;
+}
+.vn-feed-item:hover .vn-icon-box { border-color: var(--vn-lime); box-shadow: var(--vn-glow); }
+
+.vn-connector {
+    width: 2px;
+    background: var(--vn-border);
+    flex: 1;
+    margin: 10px 0;
+}
+.vn-feed-item:last-child .vn-connector { display: none; }
+
+.requires_action .vn-icon-box { background: rgba(255, 193, 7, 0.05); color: #FFC107 !important; border-color: rgba(255,193,7,0.3); }
+.escalation .vn-icon-box { background: rgba(244, 67, 54, 0.05); color: #F44336 !important; border-color: rgba(244,67,54,0.3); }
+
+.vn-feed-card {
+    flex: 1;
+    background: var(--vn-carbon);
+    border: 1px solid var(--vn-border);
+    padding: 2.5rem;
+    border-radius: 16px;
+    margin-bottom: 2.5rem;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.vn-feed-card:hover { transform: scale(1.02); border-color: rgba(255,255,255,0.2); }
+
+.vn-feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1.5rem;
+}
+.vn-feed-header h4 { font-size: 1.3rem; font-weight: 950; margin: 0; letter-spacing: -0.5px; }
+.vn-feed-time { font-size: 0.8rem; font-weight: 800; opacity: 0.25; }
+
+.vn-feed-body { font-size: 1rem; line-height: 1.7; opacity: 0.5; margin-bottom: 2rem; }
+
+.vn-feed-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 750;
+    opacity: 0.6;
+}
+.meta-tag { display: flex; align-items: center; gap: 8px; }
+.meta-tag i { color: var(--vn-lime) !important; font-size: 1rem; }
+.meta-sep { width: 1px; height: 12px; background: rgba(255,255,255,0.1); }
+
+.vn-delivery-pill { padding: 4px 10px; border-radius: 4px; background: rgba(255,255,255,0.05); font-size: 0.7rem; text-transform: uppercase; }
+.vn-delivery-pill.sent { color: var(--vn-lime) !important; background: rgba(184, 255, 0, 0.05); }
+
+.vn-empty-box { text-align: center; padding: 10rem !important; opacity: 0.2; }
+.vn-empty-box i { font-size: 4rem; display: block; margin-bottom: 2rem; }
+
+</style>
 {% endblock %}

@@ -1,93 +1,149 @@
 {% extends 'base.html' %}
-{% block title %}Policies — Expense Auditor{% endblock %}
+{% block title %}Policy Library — Expense Auditor{% endblock %}
 
 {% block content %}
+<div class="policy-page-vn">
+    <!-- Header (Obsidian Night) -->
+    <section class="top-header-vn">
+        <div class="container-ea">
+            <span class="badge-vn">Official Documentation</span>
+            <h1 class="vn-title">Policy <span class="vn-accent">Library</span></h1>
+            <p class="vn-subtitle">Standardized guidelines for organizational expenditure, travel, and subsistence. Automated enforcement enabled.</p>
+        </div>
+    </section>
 
-<!-- Page Header -->
-<section class="page-header">
-    <div class="container-ea">
-        <span class="section-label lime">Compliance Rules</span>
-        <h1>Policies</h1>
-        <p>Browse active policy documents, version history, and the full set of expense rules applied to incoming claims.</p>
-    </div>
-</section>
-
-<!-- Search Bar -->
-<div class="search-bar-row">
-    <div class="container-ea" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-        <input
-            id="policySearchInput"
-            class="search-input-ea"
-            type="search"
-            placeholder="Search versions, categories, or rule names&hellip;"
-        >
-        <span style="font-size:0.8rem;color:var(--muted);">Filter results in real time</span>
-    </div>
-</div>
-
-<!-- Two-column layout: Documents + Rules -->
-<section class="page-section compact">
-    <div class="container-ea">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
-
-            <!-- Policy Documents -->
-            <div>
-                <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">
-                    Policy Documents
-                </p>
-                <div class="policy-panel">
-                    <div class="policy-panel-header">Document Library</div>
-                    <div id="policyDocumentsList">
-                        {% for policy in policies %}
-                        <div class="policy-item policy-card">
-                            <div>
-                                <h6>{{ policy.version }}</h6>
-                                <p>Effective {{ policy.effective_date }}</p>
-                                <small>{{ policy.pdf_file.name|default:'No document uploaded' }}</small>
-                            </div>
-                            {% if policy.is_active %}
-                            <span class="badge-active">Active</span>
-                            {% else %}
-                            <span class="badge-inactive">Inactive</span>
-                            {% endif %}
+    <!-- Main Content -->
+    <section class="page-section obsidian-bg">
+        <div class="container-ea flex-layout">
+            
+            <div class="viewer-area-vn">
+                <div class="vn-card viewer-card">
+                    <div class="vn-card-header">
+                        <div class="header-left">
+                            <i class="bi bi-file-earmark-lock2-fill"></i>
+                            <h3>Active Compliance Protocol</h3>
                         </div>
-                        {% empty %}
-                        <div class="policy-item">
-                            <p style="color:var(--muted);font-size:0.875rem;">No policy documents available.</p>
+                        <div class="header-right">
+                            {% for policy in policies %}
+                                {% if policy.is_active %}<a href="{{ policy.pdf_file.url }}" class="btn-vn-lime sm" download><i class="bi bi-download"></i> Download PDF</a>{% endif %}
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
+                    
+                    <div class="vn-policy-body">
+                        {% for policy in policies %}
+                            {% if policy.is_active %}
+                                {% if policy.content %}
+                                    <div class="rich-terminal-text">
+                                        {{ policy.content|safe }}
+                                    </div>
+                                {% else %}
+                                    <p class="vn-error-text">ERR: POLICY_CONTENT_MISSING. Please re-upload the document.</p>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if not policies %}
+                            <p class="vn-error-text">CRT: NO_ACTIVE_POLICIES_IN_SYSTEM.</p>
+                        {% endif %}
+                    </div>
+
+                    {% for policy in policies %}
+                        {% if policy.status == 'pending' %}
+                        <div class="vn-banner-pending">
+                            <i class="bi bi-exclamation-octagon-fill"></i>
+                            <span>PROPOSAL_PENDING: Version {{ policy.version }} requires multi-admin verification.</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
 
-            <!-- Policy Rules -->
-            <div>
-                <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">
-                    Policy Rules
-                </p>
-                <div class="policy-panel">
-                    <div class="policy-panel-header">Active Rule Set</div>
-                    <div id="policyRulesList">
-                        {% for rule in rules %}
-                        <div class="policy-item policy-card">
-                            <div>
-                                <h6>{{ rule.constraint_name }}</h6>
-                                <p>{{ rule.category }} &middot; {{ rule.rule_type }}</p>
-                                <small>{{ rule.constraint_value }}</small>
-                            </div>
-                            <span class="badge-region">{{ rule.region }}</span>
-                        </div>
-                        {% empty %}
-                        <div class="policy-item">
-                            <p style="color:var(--muted);font-size:0.875rem;">No policy rules available.</p>
-                        </div>
-                        {% endfor %}
+            <!-- Sidebar / Stats -->
+            <div class="sidebar-area-vn">
+                <div class="vn-card mini">
+                    <h5>Compliance Stats</h5>
+                    <div class="mini-stat">
+                        <span>Active Version</span>
+                        <strong>2023.1</strong>
+                    </div>
+                    <div class="mini-stat">
+                        <span>Security Level</span>
+                        <strong>Encrypted</strong>
                     </div>
                 </div>
             </div>
 
         </div>
-    </div>
-</section>
+    </section>
+</div>
 
+<style>
+/* ── POLICY VN (PREMIUM OBSIDIAN) ── */
+
+.policy-page-vn { background: var(--vn-obsidian); }
+
+.flex-layout { display: flex; gap: 3rem; align-items: flex-start; }
+.viewer-area-vn { flex: 2.5; }
+.sidebar-area-vn { flex: 1; position: sticky; top: 120px; }
+
+.viewer-card { padding: 0 !important; overflow: hidden; border-radius: 12px; }
+
+.vn-card-header {
+    background: rgba(255,255,255,0.02);
+    padding: 1.5rem 2.5rem;
+    border-bottom: 1px solid var(--vn-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-left { display: flex; align-items: center; gap: 1rem; }
+.header-left i { font-size: 1.5rem; color: var(--vn-lime) !important; text-shadow: var(--vn-glow); }
+.header-left h3 { font-size: 1.1rem; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+
+.btn-vn-lime.sm { padding: 8px 16px; font-size: 0.75rem; border-radius: 6px; }
+
+.vn-policy-body { padding: 3rem 4rem; min-height: 500px; }
+
+/* Rich text styled for Dark Mode */
+.rich-terminal-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--vn-light) !important;
+}
+.rich-terminal-text h1, .rich-terminal-text h2, .rich-terminal-text h3 {
+    color: var(--vn-white) !important;
+    margin: 2rem 0 1rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.rich-terminal-text strong { color: var(--vn-lime) !important; }
+
+.vn-error-text { color: #F44336 !important; font-family: monospace; font-weight: 900; font-size: 0.9rem; }
+
+.vn-banner-pending {
+    background: #000;
+    padding: 1rem 2.5rem;
+    border-top: 2px solid var(--vn-lime);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: var(--vn-lime) !important;
+}
+
+.vn-card.mini { padding: 2rem; }
+.vn-card.mini h5 { font-size: 0.9rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1.5rem; border-bottom: 1px solid var(--vn-border); padding-bottom: 0.5rem; }
+.mini-stat { display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.85rem; }
+.mini-stat span { opacity: 0.4; font-weight: 700; }
+.mini-stat strong { color: var(--vn-lime) !important; }
+
+@media (max-width: 1000px) {
+    .flex-layout { flex-direction: column; }
+    .sidebar-area-vn { position: static; width: 100%; order: -1; }
+}
+
+</style>
 {% endblock %}

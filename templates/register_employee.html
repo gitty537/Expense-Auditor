@@ -1,80 +1,77 @@
 {% extends 'base.html' %}
-{% block title %}Sign In — Expense Auditor{% endblock %}
+{% block title %}Employee Activation — Expense Auditor{% endblock %}
 
 {% block content %}
 <div class="auth-page-vn">
     <!-- Header (Obsidian Night) -->
     <section class="top-header-vn">
         <div class="container-ea">
-            <span class="badge-vn">Authorized Access</span>
-            <h1 class="vn-title">System <span class="vn-accent">Gateway</span></h1>
-            <p class="vn-subtitle">Secure access to your professional expense auditing tools. Your credentials are encrypted via Obsidian V5 protocols.</p>
+            <span class="badge-vn">Authorized Node Activation</span>
+            <h1 class="vn-title">Employee <span class="vn-accent">Registration</span></h1>
+            <p class="vn-subtitle">Activate your workspace using your pre-authorized 5-digit Employee ID. Registration is required for all expenditure claims.</p>
         </div>
     </section>
 
-    <!-- Login Section -->
+    <!-- Registration Section -->
     <section class="page-section obsidian-bg">
         <div class="container-ea">
             
             <div class="vn-auth-flex">
                 <div class="vn-auth-card">
                     <div class="vn-card-header-auth">
-                        <i class="bi bi-shield-lock-fill"></i>
-                        <h3>Portal Login</h3>
+                        <i class="bi bi-person-plus-fill"></i>
+                        <h3>Create Account</h3>
                     </div>
                     
-                    <form method="post" class="vn-auth-form">
+                    <form method="POST" class="vn-auth-form">
                         {% csrf_token %}
                         
-                        {% if form.non_field_errors %}
-                        <div class="vn-form-alert error">
-                            <i class="bi bi-exclamation-octagon"></i>
-                            <span>{{ form.non_field_errors }}</span>
+                        {% if messages %}
+                        <div class="vn-form-alert info">
+                            {% for message in messages %}
+                                <i class="bi bi-info-circle"></i>
+                                <span>{{ message }}</span>
+                            {% endfor %}
                         </div>
                         {% endif %}
 
                         <div class="vn-form-group">
-                            <label for="{{ form.username.id_for_label }}">Employee ID <span class="vn-req">*</span></label>
-                            <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}"
-                                   required placeholder="e.g. 10001" class="vn-input-dark"
-                                   value="{{ form.username.value|default:'' }}">
-                            {% if form.username.errors %}
-                                <div class="vn-err-msg">{{ form.username.errors }}</div>
-                            {% endif %}
+                            <label>Employee ID (5-digits) <span class="vn-req">*</span></label>
+                            <input type="text" name="employee_id" maxlength="5" required 
+                                   placeholder="e.g. 10001" class="vn-input-dark">
+                            <small class="vn-input-hint">Your pre-assigned organization ID.</small>
                         </div>
                         
                         <div class="vn-form-group">
-                            <label for="{{ form.password.id_for_label }}">Account Password <span class="vn-req">*</span></label>
-                            <input type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}"
-                                   required placeholder="••••••••" class="vn-input-dark">
-                            {% if form.password.errors %}
-                                <div class="vn-err-msg">{{ form.password.errors }}</div>
-                            {% endif %}
+                            <label>Create Secure Password <span class="vn-req">*</span></label>
+                            <input type="password" name="password" required 
+                                   placeholder="••••••••" class="vn-input-dark">
+                            <small class="vn-input-hint">Minimum 8 characters highly recommended.</small>
                         </div>
                         
-                        <button type="submit" class="btn-vn-lime lg w-full">Authenticate & Unlock</button>
+                        <button type="submit" class="btn-vn-lime lg w-full">Activate & Sign In</button>
                     </form>
                     
                     <div class="vn-auth-footer">
-                        Don't have an active workspace? <br>
-                        <a href="{% url 'register_employee' %}" class="vn-mini-link">Activate your Employee Account &rarr;</a>
+                        Already have an active account? <br>
+                        <a href="{% url 'login' %}" class="vn-mini-link">Enter the Terminal &rarr;</a>
                     </div>
                 </div>
 
-                <!-- Info Cards -->
+                <!-- Guidance Info -->
                 <div class="vn-auth-info">
                     <div class="vn-info-box">
-                        <i class="bi bi-cpu-fill"></i>
+                        <i class="bi bi-patch-check-fill"></i>
                         <div class="info-content">
-                            <h5>Neural Auditor</h5>
-                            <p>Real-time OCR extraction with 99.8% precision for global receipts.</p>
+                            <h5>Pre-Authorized Access</h5>
+                            <p>Only employees with whitelisted 5-digit IDs can activate their workspace on this platform.</p>
                         </div>
                     </div>
                     <div class="vn-info-box">
-                        <i class="bi bi-safe2-fill"></i>
+                        <i class="bi bi-layout-text-sidebar-reverse"></i>
                         <div class="info-content">
-                            <h5>Zero Trust</h5>
-                            <p>Every claim is hashed and verified against the organization's immutable policy ledger.</p>
+                            <h5>Unified Claims Log</h5>
+                            <p>All receipts submitted post-activation are cryptographically linked to your unique employee profile.</p>
                         </div>
                     </div>
                 </div>
@@ -99,7 +96,7 @@
 }
 
 .vn-auth-card {
-    width: 460px;
+    width: 480px;
     background: var(--vn-carbon);
     border: 1px solid var(--vn-border);
     border-radius: 20px;
@@ -109,20 +106,6 @@
 .vn-card-header-auth { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
 .vn-card-header-auth i { font-size: 2rem; color: var(--vn-lime) !important; text-shadow: var(--vn-glow); }
 .vn-card-header-auth h3 { font-size: 1.4rem; font-weight: 950; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
-
-.vn-form-alert {
-    background: rgba(244, 67, 54, 0.05);
-    border: 1px solid rgba(244, 67, 54, 0.3);
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-.vn-form-alert.error { color: #F44336 !important; }
 
 .vn-form-group { margin-bottom: 1.75rem; }
 .vn-form-group label { display: block; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.5; }
@@ -140,8 +123,7 @@
     transition: 0.3s;
 }
 .vn-input-dark:focus { border-color: var(--vn-lime); outline: none; box-shadow: 0 0 10px rgba(184, 255, 0, 0.1); }
-
-.vn-err-msg { color: #F44336 !important; font-size: 0.75rem; font-weight: 800; margin-top: 6px; }
+.vn-input-hint { display: block; margin-top: 6px; font-size: 0.75rem; font-weight: 700; opacity: 0.3; }
 
 .w-full { width: 100%; }
 

@@ -1,269 +1,314 @@
 {% extends 'base.html' %}
-{% block title %}Upload Document — Expense Auditor{% endblock %}
+{% block title %}Submission Portal — Expense Auditor{% endblock %}
 
 {% block content %}
-<section class="page-header">
-    <div class="container-ea">
-        <span class="section-label lime">
-            {% if is_employee %}Submit Claim{% elif is_admin %}Admin Tools{% else %}Documents{% endif %}
-        </span>
-        <h1>Upload Document</h1>
-        <p>
-            {% if is_employee and is_admin %}
-                Switch between submitting a receipt or uploading a company policy document.
-            {% elif is_employee %}
-                Submit your expense receipts for review.
-            {% elif is_admin %}
-                Upload your company expense policy document for employees to follow.
-            {% else %}
-                No upload permissions are assigned to your account yet.
-            {% endif %}
-        </p>
-    </div>
-</section>
+<div class="upload-page-vn">
+    <!-- Header (Obsidian Night) -->
+    <section class="top-header-vn">
+        <div class="container-ea">
+            <span class="badge-vn">Submission Gateway</span>
+            <h1 class="vn-title">Portal <span class="vn-accent">Upload</span></h1>
+            <p class="vn-subtitle">Authorized entry point for expense claims and policy governance documents. Dynamic scanning enabled.</p>
+        </div>
+    </section>
 
-<section class="page-section compact">
-    <div class="container-ea">
-
-        <!-- Flash messages -->
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == 'error' %}
-                    <div class="alert-msg alert-error">{{ message }}</div>
-                {% elif message.tags == 'warning' %}
-                    <div class="alert-msg alert-warning">{{ message }}</div>
-                {% else %}
-                    <div class="alert-msg alert-success">{{ message }}</div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-
-        {% if not is_employee and not is_admin %}
-            <!-- No role assigned -->
-            <div class="upload-card" style="text-align:center; padding:3rem;">
-                <i class="bi bi-shield-exclamation" style="font-size:3rem; color:var(--muted);"></i>
-                <h3 style="color:var(--text-light); margin-top:1rem;">No Upload Access</h3>
-                <p style="color:var(--muted);">Your account has not been assigned an upload role yet.<br>Please contact your system administrator.</p>
-            </div>
-        {% else %}
-            <div class="upload-card">
-
-                <!-- Tab bar — only show if user has BOTH roles (edge case) -->
-                {% if is_employee and is_admin %}
-                <div class="upload-tabs">
-                    <button type="button" id="tab-receipt" class="upload-tab active" onclick="switchTab('receipt')">
-                        <i class="bi bi-receipt"></i> Upload Receipt
+    <!-- Portal Interface -->
+    <section class="page-section obsidian-bg">
+        <div class="container-ea">
+            
+            <div class="vn-portal-wrap">
+                <!-- Tab Controls -->
+                <div class="vn-tab-header">
+                    {% if is_employee and not is_admin %}
+                    <button class="vn-tab-btn active" onclick="switchPortalTab(event, 'claimTab')">
+                        <i class="bi bi-receipt-cutoff"></i>
+                        Claim Submission
                     </button>
-                    <button type="button" id="tab-policy" class="upload-tab" onclick="switchTab('policy')">
-                        <i class="bi bi-file-earmark-text"></i> Upload Policy
+                    <button class="vn-tab-btn" onclick="switchPortalTab(event, 'myClaimsTab')">
+                        <i class="bi bi-clock-history"></i>
+                        My Claims Status
                     </button>
+                    {% elif is_admin %}
+                    <button class="vn-tab-btn active" onclick="switchPortalTab(event, 'policyTab')">
+                        <i class="bi bi-file-earmark-medical"></i>
+                        Policy Update
+                    </button>
+                    {% endif %}
                 </div>
-                {% elif is_employee %}
-                <div class="upload-tab-header">
-                    <i class="bi bi-receipt" style="color:var(--lime-primary);"></i>
-                    <span>Employee — Receipt Submission</span>
+
+                <!-- Tab 1: Claim Submission (Employee Only) -->
+                {% if is_employee and not is_admin %}
+                <div id="claimTab" class="vn-tab-pane active fade-in">
+                    <div class="vn-card-portal">
+                        <div class="form-instructions-vn">
+                            <h5>Expenditure Claim</h5>
+                            <p>Upload a clear digital image or PDF of your receipt. Our OCR engine will automatically extract the Merchant, Amount, and Date for compliance verification.</p>
+                        </div>
+                        
+                        <form method="POST" enctype="multipart/form-data" class="vn-portal-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="receipt">
+                            
+                            <div class="vn-drop-zone" id="receiptDropZone">
+                                <i class="bi bi-cloud-arrow-up-fill"></i>
+                                <p>Select Receipt File (JPG, PNG, PDF)</p>
+                                <span>Max size: 5MB</span>
+                                <input type="file" name="receipt_file" id="receiptInput" required>
+                            </div>
+
+                            <div class="vn-form-grid">
+                                <div class="vn-form-group">
+                                    <label>Expense Date <span class="vn-req">*</span></label>
+                                    <input type="date" name="expense_date" required class="vn-input-dark">
+                                    <small>As shown on receipt</small>
+                                </div>
+                                <div class="vn-form-group">
+                                    <label>Business Justification <span class="vn-req">*</span></label>
+                                    <input type="text" name="reason" required placeholder="e.g. Client Dinner" class="vn-input-dark">
+                                    <small>Brief explanation for the expense</small>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-vn-lime lg w-full" style="margin-bottom: 1.5rem;">Execute Submission</button>
+                            
+                            <div class="vn-preauth-promo" style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                                <span style="font-size: 0.85rem; opacity: 0.5;">Filing for an external event or conference?</span><br>
+                                <a href="{% url 'pre_auth_submit' %}" style="color: var(--vn-lime); font-size: 0.85rem; font-weight: 800; text-decoration: none; display: inline-block; margin-top: 6px;">Submit Required Business Event Approval &rarr;</a>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
                 </div>
-                {% elif is_admin %}
-                <div class="upload-tab-header">
-                    <i class="bi bi-file-earmark-text" style="color:var(--lime-primary);"></i>
-                    <span>Admin — Policy Document Upload</span>
+
+                <!-- Tab: My Claims (Employee Only) -->
+                <div id="myClaimsTab" class="vn-tab-pane fade-in">
+                    <div class="vn-card-portal">
+                        <div class="form-instructions-vn">
+                            <h5>My Archive</h5>
+                            <p>Track the status of your claims, review automated decisions, and check policy governance actions on your submissions.</p>
+                        </div>
+                        
+                        <div class="my-claims-list">
+                            {% for claim in my_claims %}
+                            <div class="claim-item-vn">
+                                <div class="claim-header">
+                                    <span class="claim-id">{{ claim.receipt_id }}</span>
+                                    <span class="claim-date">{{ claim.upload_timestamp|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="claim-body">
+                                    <strong>{{ claim.extracted_data.merchant_name|default:"Processing..." }}</strong>
+                                    {% if claim.extracted_data %} {{ claim.extracted_data.total_amount }} {{ claim.extracted_data.currency_code }} {% endif %}
+                                </div>
+                                <div class="claim-footer">
+                                    {% if claim.receipt_approval.audit_session.decision %}
+                                        {% with decision=claim.receipt_approval.audit_session.decision %}
+                                        <span class="status-badge {{ decision.final_status }}">{{ decision.final_status|upper }}</span>
+                                        <span class="decision-reason">{{ decision.generated_explanation }}</span>
+                                        {% endwith %}
+                                    {% else %}
+                                        <span class="status-badge processing">PENDING REVIEW</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p style="opacity: 0.5;">You haven't submitted any claims yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
                 {% endif %}
 
-                <!-- ── RECEIPT FORM ── -->
-                {% if is_employee %}
-                <form id="form-receipt"
-                      method="POST"
-                      enctype="multipart/form-data"
-                      action="{% url 'upload_receipt' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="upload_type" value="receipt">
-
-                    <div class="form-group-ea">
-                        <label>Receipt File <span class="required">*</span></label>
-                        <input type="file" name="file" id="receipt-file"
-                               accept=".pdf,.jpg,.jpeg,.png" required
-                               class="file-input">
-                        <small class="field-hint">PDF, JPG or PNG — maximum 5 MB.</small>
-                    </div>
-
-                    <div class="form-group-ea">
-                        <label>Expense Date <span class="required">*</span></label>
-                        <input type="date" name="expense_date" required class="text-input">
-                    </div>
-
-                    <div class="form-group-ea">
-                        <label>Reason for Expense <span class="required">*</span></label>
-                        <textarea name="reason" rows="3" required
-                                  placeholder="E.g., Client dinner with ABC Corp"
-                                  class="textarea-input"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-ea btn-full">
-                        <i class="bi bi-cloud-upload"></i> Submit Receipt
-                    </button>
-                </form>
-                {% endif %}
-
-                <!-- ── POLICY FORM ── -->
+                <!-- Tab 2: Policy Update (Admin Only) -->
                 {% if is_admin %}
-                <form id="form-policy"
-                      method="POST"
-                      enctype="multipart/form-data"
-                      action="{% url 'upload_receipt' %}"
-                      {% if is_employee %}style="display:none;"{% endif %}>
-                    {% csrf_token %}
-                    <input type="hidden" name="upload_type" value="policy">
+                <div id="policyTab" class="vn-tab-pane active fade-in">
+                    <div class="vn-card-portal">
+                        <div class="form-instructions-vn">
+                            <h5>Policy Governance</h5>
+                            <p>Upload a new organization policy document (PDF). Updating the policy requires multi-admin consensus and will be broadcast to all relevant nodes.</p>
+                        </div>
 
-                    <div class="form-group-ea">
-                        <label>Policy Document (PDF) <span class="required">*</span></label>
-                        <input type="file" name="file" id="policy-file"
-                               accept=".pdf" required class="file-input">
-                        <small class="field-hint">PDF only — up to 100 MB. Supports 100+ page documents.</small>
+                        <form method="POST" enctype="multipart/form-data" class="vn-portal-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="policy">
+                            
+                            <div class="vn-drop-zone-alt" id="policyDropZone">
+                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                                <p>Select Policy Document (PDF)</p>
+                                <span>Max size: 20MB</span>
+                                <input type="file" name="policy_file" id="policyInput" required>
+                            </div>
+
+                            <div class="vn-form-group">
+                                <label>Version Identifier <span class="vn-req">*</span></label>
+                                <input type="text" name="version" required placeholder="e.g. 2023.2-B" class="vn-input-dark">
+                                <small>Must follow organization naming protocols</small>
+                            </div>
+
+                            <button type="submit" class="btn-vn-lime lg w-full">Propose Policy Update</button>
+                        </form>
                     </div>
-
-                    <div class="form-group-ea">
-                        <label>Policy Version <span class="required">*</span></label>
-                        <input type="text" name="version" required
-                               placeholder="e.g. 2026-v2"
-                               class="text-input">
-                        <small class="field-hint">Must be unique. Leave blank to auto-generate.</small>
-                    </div>
-
-                    <div class="form-group-ea">
-                        <label>Effective Date <span class="required">*</span></label>
-                        <input type="date" name="effective_date" required class="text-input">
-                    </div>
-
-                    <button type="submit" class="btn-ea btn-full btn-outline">
-                        <i class="bi bi-cloud-arrow-up"></i> Upload Policy Document
-                    </button>
-                </form>
+                </div>
                 {% endif %}
+            </div>
 
-            </div><!-- /.upload-card -->
-        {% endif %}
-
-    </div>
-</section>
+        </div>
+    </section>
+</div>
 
 <style>
-.upload-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 2rem;
-    max-width: 620px;
+/* ── UPLOAD VN (PREMIUM OBSIDIAN) ── */
+
+.upload-page-vn { background: var(--vn-obsidian); }
+
+.vn-portal-wrap {
+    max-width: 900px;
     margin: 0 auto;
 }
-.upload-tabs {
+
+/* Tabs */
+.vn-tab-header {
     display: flex;
-    border-bottom: 1px solid var(--border-color);
+    gap: 10px;
     margin-bottom: 2rem;
+    background: rgba(255,255,255,0.02);
+    padding: 8px;
+    border-radius: 12px;
+    border: 1px solid var(--vn-border);
 }
-.upload-tab {
+.vn-tab-btn {
     flex: 1;
     background: transparent;
     border: none;
-    color: var(--muted);
-    font-weight: 600;
-    padding: 1rem;
-    border-bottom: 2px solid transparent;
+    padding: 1.25rem;
+    color: #FFF;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: color .2s, border-color .2s;
-    font-size: 0.9rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 12px;
+    transition: 0.3s;
+    opacity: 0.4;
 }
-.upload-tab.active,
-.upload-tab:hover {
-    color: var(--lime-primary);
-    border-bottom-color: var(--lime-primary);
+.vn-tab-btn i { font-size: 1.25rem; }
+.vn-tab-btn:hover { opacity: 0.8; background: rgba(255,255,255,0.03); }
+.vn-tab-btn.active { opacity: 1; background: var(--vn-carbon); color: var(--vn-lime); border: 1px solid var(--vn-border); }
+
+.vn-tab-pane { display: none; }
+.vn-tab-pane.active { display: block; }
+
+.vn-card-portal {
+    background: var(--vn-carbon);
+    border: 1px solid var(--vn-border);
+    padding: 4rem;
+    border-radius: 20px;
 }
-.upload-tab-header {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-weight: 600;
-    color: var(--text-light);
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 1.75rem;
-    font-size: 0.95rem;
+
+.form-instructions-vn { margin-bottom: 3.5rem; border-left: 3px solid var(--vn-lime); padding-left: 2rem; }
+.form-instructions-vn h5 { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+.form-instructions-vn p { opacity: 0.4; line-height: 1.7; font-size: 0.95rem; max-width: 600px; }
+
+/* Dropzones */
+.vn-drop-zone, .vn-drop-zone-alt {
+    border: 2px dashed rgba(255,255,255,0.1);
+    background: #000;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 12px;
+    margin-bottom: 3rem;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
 }
-.form-group-ea {
-    margin-bottom: 1.5rem;
-}
-.form-group-ea label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--text-light);
-    font-size: 0.9rem;
-}
-.required { color: #f44336; }
-.file-input,
-.text-input,
-.textarea-input {
+.vn-drop-zone:hover, .vn-drop-zone-alt:hover { border-color: var(--vn-lime); background: rgba(184, 255, 0, 0.02); }
+.vn-drop-zone i { font-size: 3rem; margin-bottom: 1.5rem; display: block; color: var(--vn-lime); opacity: 0.4; }
+.vn-drop-zone-alt i { font-size: 3rem; margin-bottom: 1.5rem; display: block; color: var(--vn-white); opacity: 0.4; }
+.vn-drop-zone p { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; }
+.vn-drop-zone span { font-size: 0.8rem; font-weight: 700; opacity: 0.3; }
+.vn-drop-zone input, .vn-drop-zone-alt input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.vn-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3.5rem; }
+
+.vn-form-group { margin-bottom: 1.75rem; }
+.vn-form-group label { display: block; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.5; }
+.vn-req { color: #F44336; }
+.vn-form-group small { display: block; margin-top: 6px; font-size: 0.75rem; font-weight: 700; opacity: 0.3; }
+
+.vn-input-dark {
     width: 100%;
-    padding: 0.75rem;
-    background: var(--bg-color);
-    border: 1px solid var(--border-color);
+    background: #000;
+    border: 1px solid var(--vn-border);
+    padding: 14px 18px;
     border-radius: 8px;
-    color: var(--text-light);
+    color: #FFF;
     font-family: inherit;
-    font-size: 0.9rem;
-    box-sizing: border-box;
-    transition: border-color .2s;
+    font-size: 0.95rem;
+    transition: 0.3s;
 }
-.file-input:focus,
-.text-input:focus,
-.textarea-input:focus {
-    outline: none;
-    border-color: var(--lime-primary);
+.vn-input-dark:focus { border-color: var(--vn-lime); outline: none; }
+
+.my-claims-list { display: flex; flex-direction: column; gap: 15px; }
+.claim-item-vn { background: #000; border: 1px solid var(--vn-border); padding: 20px; border-radius: 8px; }
+.claim-header { display: flex; justify-content: space-between; margin-bottom: 8px; opacity: 0.5; font-size: 0.8rem; font-weight: 800; font-family: monospace; }
+.claim-body { font-size: 1.1rem; margin-bottom: 12px; }
+.claim-footer { display: flex; align-items: center; gap: 12px; }
+.status-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; }
+.status-badge.approved { background: rgba(184, 255, 0, 0.1); color: var(--vn-lime); }
+.status-badge.flagged { background: rgba(255, 193, 7, 0.1); color: #FFC107; }
+.status-badge.rejected { background: rgba(244, 67, 54, 0.1); color: #F44336; }
+.status-badge.processing { background: rgba(255, 255, 255, 0.05); color: #FFF; }
+.decision-reason { font-size: 0.8rem; opacity: 0.6; }
+
+.fade-in { animation: vnFadeIn 0.5s ease-out; }
+@keyframes vnFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 768px) {
+    .vn-form-grid { grid-template-columns: 1fr; }
+    .vn-tab-header { flex-direction: column; }
+    .claim-footer { flex-direction: column; align-items: flex-start; gap: 4px; }
 }
-.field-hint {
-    color: var(--muted);
-    display: block;
-    margin-top: 0.4rem;
-    font-size: 0.8rem;
-}
-.btn-full { width: 100%; justify-content: center; padding: 1rem; font-size: 1rem; }
-.btn-outline { background: transparent; border: 1px solid var(--lime-primary); color: var(--lime-primary); }
-.alert-msg {
-    padding: 0.9rem 1.2rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    max-width: 620px;
-    margin-left: auto;
-    margin-right: auto;
-}
-.alert-error   { background: rgba(244,67,54,.1); border: 1px solid rgba(244,67,54,.4); color: #f44336; }
-.alert-warning { background: rgba(255,152,0,.1);  border: 1px solid rgba(255,152,0,.4);  color: #ff9800; }
-.alert-success { background: rgba(118,185,0,.1);  border: 1px solid rgba(118,185,0,.4);  color: var(--lime-primary); }
 </style>
 
 <script>
-function switchTab(tab) {
-    const receiptForm = document.getElementById('form-receipt');
-    const policyForm  = document.getElementById('form-policy');
-    const tabReceipt  = document.getElementById('tab-receipt');
-    const tabPolicy   = document.getElementById('tab-policy');
-
-    if (tab === 'receipt') {
-        if (receiptForm) receiptForm.style.display = 'block';
-        if (policyForm)  policyForm.style.display  = 'none';
-        if (tabReceipt)  tabReceipt.classList.add('active');
-        if (tabPolicy)   tabPolicy.classList.remove('active');
-    } else {
-        if (receiptForm) receiptForm.style.display = 'none';
-        if (policyForm)  policyForm.style.display  = 'block';
-        if (tabPolicy)   tabPolicy.classList.add('active');
-        if (tabReceipt)  tabReceipt.classList.remove('active');
+function switchPortalTab(evt, tabId) {
+    var i, tabpane, tabbtn;
+    tabpane = document.getElementsByClassName("vn-tab-pane");
+    for (i = 0; i < tabpane.length; i++) {
+        tabpane[i].style.display = "none";
+        tabpane[i].classList.remove("active");
     }
+    tabbtn = document.getElementsByClassName("vn-tab-btn");
+    for (i = 0; i < tabbtn.length; i++) {
+        tabbtn[i].className = tabbtn[i].className.replace(" active", "");
+    }
+    document.getElementById(tabId).style.display = "block";
+    document.getElementById(tabId).classList.add("active");
+    evt.currentTarget.className += " active";
 }
+</script>
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    function setupFileInput(inputId, dropZoneId, defaultText) {
+        var input = document.getElementById(inputId);
+        var dropZone = document.getElementById(dropZoneId);
+        if (input && dropZone) {
+            var textElement = dropZone.querySelector("p");
+            input.addEventListener("change", function(e) {
+                if (e.target.files.length > 0) {
+                    textElement.innerHTML = '<span style="color:var(--vn-lime)">Selected file:</span> ' + e.target.files[0].name;
+                } else {
+                    textElement.innerText = defaultText;
+                }
+            });
+        }
+    }
+    setupFileInput("receiptInput", "receiptDropZone", "Select Receipt File (JPG, PNG, PDF)");
+    setupFileInput("policyInput", "policyDropZone", "Select Policy Document (PDF)");
+});
 </script>
 {% endblock %}

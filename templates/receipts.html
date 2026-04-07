@@ -1,86 +1,197 @@
 {% extends 'base.html' %}
-{% block title %}Receipts — Expense Auditor{% endblock %}
+{% block title %}Archive Terminal — Expense Auditor{% endblock %}
 
 {% block content %}
+<div class="archive-page-vn">
+    <!-- Header (Obsidian Night) -->
+    <section class="top-header-vn">
+        <div class="container-ea">
+            <span class="badge-vn">Immutable Archive</span>
+            <h1 class="vn-title">Document <span class="vn-accent">Archive</span></h1>
+            <p class="vn-subtitle">Cryptographic log of all expense submissions, automated audit decisions, and fraud detection flags.</p>
+        </div>
+    </section>
 
-<!-- Page Header -->
-<section class="page-header">
-    <div class="container-ea">
-        <span class="section-label lime">Expense Claims</span>
-        <h1>Receipts</h1>
-        <p>Search and review image uploads with OCR extraction status, file quality checks, and processing history.</p>
-    </div>
-</section>
+    <!-- Data Table Section -->
+    <section class="page-section obsidian-bg">
+        <div class="container-ea">
+            
+            <div class="vn-table-header">
+                <h3>System Logs</h3>
+                <div class="vn-search-wrap">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Search archive logs..." id="archiveSearch">
+                </div>
+            </div>
 
-<!-- Search Bar -->
-<div class="search-bar-row">
-    <div class="container-ea" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-        <input
-            id="receiptSearchInput"
-            class="search-input-ea"
-            type="search"
-            placeholder="Search by employee, status, or file name&hellip;"
-        >
-        <span style="font-size:0.8rem;color:var(--muted);">Filter results below in real time</span>
-    </div>
-</div>
-
-<!-- Data Table -->
-<section class="page-section compact">
-    <div class="container-ea">
-
-        <!-- Summary strip -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:10px;">
-            <p style="font-size:0.8rem;color:var(--muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;">
-                All Receipt Uploads
-            </p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <span class="badge-ea pending">Pending</span>
-                <span class="badge-ea processing">Processing</span>
-                <span class="badge-ea completed">Completed</span>
-                <span class="badge-ea failed">Failed</span>
+            <div class="vn-table-box">
+                <table class="vn-data-table">
+                    <thead>
+                        <tr>
+                            <th>Receipt ID</th>
+                            <th>Authorized By</th>
+                            <th>Audit Decision</th>
+                            <th>File / Hash</th>
+                            <th>Status Cord</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for upload in uploads %}
+                        <tr class="vn-archive-row {% if upload.is_potential_duplicate %}vn-duplicate-alert{% endif %}">
+                            <td class="vn-id-col">
+                                <span class="vn-id-val">{{ upload.receipt_id|default:upload.id }}</span>
+                                {% if upload.is_potential_duplicate %}
+                                    <span class="vn-fraud-tag"><i class="bi bi-shield-slash-fill"></i> Duplicate</span>
+                                {% endif %}
+                            </td>
+                            <td class="vn-user-col">
+                                <div class="vn-user-icon"><i class="bi bi-person-fill"></i></div>
+                                <span>{{ upload.employee.user.username }}</span>
+                            </td>
+                            <td>
+                                {% with decision=upload.receipt_approval.audit_session.decision %}
+                                    {% if decision %}
+                                        <div class="vn-decision-pill {{ decision.final_status }}">
+                                            <i class="bi {% if decision.final_status == 'approved' %}bi-check-circle-fill{% elif decision.final_status == 'rejected' %}bi-x-circle-fill{% else %}bi-exclamation-triangle-fill{% endif %}"></i>
+                                            <span>{{ decision.final_status|upper }}</span>
+                                        </div>
+                                        <small class="vn-decision-hint">{{ decision.generated_explanation|truncatechars:60 }}</small>
+                                    {% else %}
+                                        <span class="v4-muted">SYNC_PENDING</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td class="vn-file-col">
+                                <code>{{ upload.original_file.name|default:'—' }}</code>
+                                <small class="vn-hash-val">{{ upload.file_hash|truncatechars:16 }}</small>
+                            </td>
+                            <td>
+                                <span class="vn-state-tag {{ upload.processing_status }}">
+                                    {{ upload.processing_status|upper }}
+                                </span>
+                            </td>
+                            <td class="vn-time-col">{{ upload.upload_timestamp|date:'M d, Y H:i' }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="vn-empty-box">
+                                <i class="bi bi-journal-x"></i>
+                                <p>NO_RECORDS_FOUND_IN_ARCHIVE.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
+    </section>
+</div>
 
-        <div class="data-table-wrap">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Employee</th>
-                        <th>Status</th>
-                        <th>Receipt File</th>
-                        <th>File Size</th>
-                        <th>Uploaded</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for upload in uploads %}
-                    <tr class="receipt-row">
-                        <td>{{ upload.id }}</td>
-                        <td style="font-weight:600;">{{ upload.employee.user.username }}</td>
-                        <td>
-                            <span class="badge-ea {{ upload.processing_status }}">{{ upload.processing_status }}</span>
-                            {% if upload.processing_error_message %}
-                                <div style="font-size:0.75rem; color:#f44336; margin-top:0.25rem;">{{ upload.processing_error_message }}</div>
-                            {% endif %}
-                        </td>
-                        <td style="font-family:monospace;font-size:0.8rem;">{{ upload.original_file.name|default:'—' }}</td>
-                        <td>{{ upload.file_size|default:'0' }} <span style="color:var(--muted);font-size:0.78rem;">bytes</span></td>
-                        <td>{{ upload.upload_timestamp|date:'M d, Y H:i' }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" style="text-align:center;padding:3rem;color:var(--muted);">
-                            <i class="bi bi-receipt" style="font-size:2rem;display:block;margin-bottom:0.75rem;opacity:0.3;"></i>
-                            No receipt uploads found.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</section>
+<style>
+/* ── ARCHIVE VN (PREMIUM OBSIDIAN) ── */
 
+.archive-page-vn { background: var(--vn-obsidian); }
+
+.vn-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--vn-border);
+}
+.vn-table-header h3 { font-size: 1.5rem; font-weight: 900; margin: 0; }
+
+.vn-search-wrap {
+    background: var(--vn-carbon);
+    border: 1px solid var(--vn-border);
+    padding: 10px 20px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 350px;
+}
+.vn-search-wrap i { opacity: 0.3; }
+.vn-search-wrap input {
+    background: transparent;
+    border: none;
+    color: #FFF;
+    font-size: 0.85rem;
+    font-weight: 600;
+    width: 100%;
+}
+.vn-search-wrap input:focus { outline: none; }
+
+.vn-table-box {
+    background: var(--vn-carbon);
+    border: 1px solid var(--vn-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.vn-data-table { width: 100%; border-collapse: collapse; }
+.vn-data-table th {
+    background: rgba(255,255,255,0.02);
+    text-align: left;
+    padding: 1.5rem 2rem;
+    font-weight: 900;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid var(--vn-border);
+}
+
+.vn-archive-row { border-bottom: 1px solid var(--vn-border); transition: 0.3s; }
+.vn-archive-row:hover { background: rgba(255,255,255,0.02); }
+.vn-duplicate-alert { background: rgba(244, 67, 54, 0.05) !important; border-left: 4px solid #F44336; }
+
+.vn-archive-row td { padding: 1.75rem 2rem; vertical-align: top; }
+
+.vn-id-col { display: flex; flex-direction: column; gap: 8px; }
+.vn-id-val { font-weight: 900; font-family: monospace; letter-spacing: 1px; }
+
+.vn-fraud-tag {
+    background: #F44336 !important;
+    color: #FFF !important;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 950;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.vn-user-col { display: flex; align-items: center; gap: 12px; font-weight: 850; }
+.vn-user-icon { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 50%; opacity: 0.5; display: flex; }
+
+.vn-decision-pill { display: flex; align-items: center; gap: 8px; font-weight: 950; font-size: 0.85rem; margin-bottom: 6px; }
+.vn-decision-pill.approved { color: var(--vn-lime) !important; }
+.vn-decision-pill.rejected { color: #F44336 !important; }
+.vn-decision-pill.flagged { color: #FFC107 !important; }
+
+.vn-decision-hint { display: block; font-size: 0.75rem; opacity: 0.4; font-weight: 600; line-height: 1.4; max-width: 200px; }
+
+.vn-file-col code { font-family: monospace; opacity: 0.5; font-size: 0.85rem; display: block; margin-bottom: 4px; }
+.vn-hash-val { opacity: 0.2; font-size: 0.7rem; letter-spacing: 1px; }
+
+.vn-state-tag {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid var(--vn-border);
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+.vn-state-tag.completed { border-color: var(--vn-lime) !important; color: var(--vn-lime) !important; background: rgba(184, 255, 0, 0.05); }
+
+.vn-time-col { white-space: nowrap; font-size: 0.8rem; font-weight: 800; opacity: 0.25; }
+
+.vn-empty-box { text-align: center; padding: 6rem !important; opacity: 0.2; }
+.vn-empty-box i { font-size: 3.5rem; display: block; margin-bottom: 2rem; }
+
+</style>
 {% endblock %}

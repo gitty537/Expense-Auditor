@@ -21,6 +21,9 @@ class ReceiptUpload(models.Model):
     reason = models.TextField(null=True, blank=True)
     processing_status = models.CharField(max_length=20, choices=ProcessingStatus.choices, default=ProcessingStatus.PENDING)
     processing_error_message = models.TextField(null=True, blank=True)
+    receipt_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    file_hash = models.CharField(max_length=64, db_index=True, null=True, blank=True)
+    is_potential_duplicate = models.BooleanField(default=False)
     image_quality_score = models.FloatField(null=True, blank=True)
     metadata = models.JSONField(null=True, blank=True)
 

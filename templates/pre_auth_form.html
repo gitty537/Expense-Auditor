@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Expense Pre-Authorisation — Expense Auditor{% endblock %}
+
+{% block content %}
+<div class="preauth-page-vn">
+    <!-- Header (Obsidian Night) -->
+    <section class="top-header-vn">
+        <div class="container-ea">
+            <span class="badge-vn">Policy Compliance: Pre-Approval</span>
+            <h1 class="vn-title">Expense <span class="vn-accent">Authorisation</span></h1>
+            <p class="vn-subtitle">Required documentation for valid business expenses. Subject to Finance Auditor approval.</p>
+        </div>
+    </section>
+
+    <!-- Form Section -->
+    <section class="page-section obsidian-bg">
+        <div class="container-ea">
+            <div class="vn-card-portal" style="max-width: 700px; margin: 0 auto; padding: 3rem;">
+                <div class="form-instructions-vn" style="margin-bottom: 2.5rem; border-left: 3px solid var(--vn-lime); padding-left: 2rem;">
+                    <h5 style="font-size: 1.2rem; font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase;">Expense Pre-Authorisation</h5>
+                    <p style="opacity: 0.4; font-size: 0.9rem;">Submit your intended expense rationale for approval by the Finance Auditor before making the purchase or submitting the receipt. The AI will verify your receipt matches this reason.</p>
+                </div>
+
+                <form method="POST" action="{% url 'pre_auth_submit' %}">
+                    {% csrf_token %}
+                    
+                    <div class="vn-form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 8px; opacity: 0.5;">Expense Reason <span class="vn-req" style="color: #F44336;">*</span></label>
+                        <input type="text" name="expense_reason" required class="vn-input-dark w-full" placeholder="e.g. Client Dinner with ABC Corp" style="background: #000; border: 1px solid var(--vn-border); padding: 14px; border-radius: 8px; color: #FFF; width: 100%;">
+                    </div>
+                    
+                    <div class="vn-form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 8px; opacity: 0.5;">Estimated Amount <span class="vn-req" style="color: #F44336;">*</span></label>
+                        <input type="number" step="0.01" name="estimated_amount" required class="vn-input-dark w-full" placeholder="0.00" style="background: #000; border: 1px solid var(--vn-border); padding: 14px; border-radius: 8px; color: #FFF; width: 100%;">
+                    </div>
+                    
+                    <button type="submit" class="btn-vn-lime w-full mt-4" style="margin-top: 1rem; width: 100%;">Request Authorization</button>
+                    <a href="{% url 'upload_receipt' %}" style="display: block; text-align: center; margin-top: 1.5rem; color: #FFF; opacity: 0.4; text-decoration: none; font-size: 0.85rem; font-weight: 700;">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+.preauth-page-vn { background: var(--vn-obsidian); }
+</style>
+{% endblock %}

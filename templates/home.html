@@ -1,139 +1,178 @@
 {% extends 'base.html' %}
-{% block title %}Dashboard — Expense Auditor{% endblock %}
+{% block title %}Welcome — Expense Auditor{% endblock %}
 
 {% block content %}
+<div class="home-page-vn">
+    <!-- Hero Section (Obsidian Night) -->
+    <section class="hero-vn">
+        <div class="container-ea flex-hero">
+            <div class="hero-text-area">
+                <span class="badge-vn">Authorized Access</span>
+                <h1 class="vn-title">
+                    Welcome back,<br>
+                    <span class="vn-accent">{% if user.is_authenticated %}{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}{% else %}Guest User{% endif %}</span>.
+                </h1>
+                <p class="vn-subtitle">Intelligent expense compliance and multi-admin consensus verification for modern finance teams. Your session is encrypted and secure.</p>
+                
+                <div class="vn-cta-group">
+                    {% if user.is_authenticated %}
+                        {% if user.roles.filter(role='employee').exists and not user.roles.filter(role='admin').exists %}
+                            <a href="{% url 'upload_receipt' %}" class="btn-vn-lime lg">Submit New Claim</a>
+                        {% endif %}
+                        {% if user.roles.filter(role='admin').exists %}
+                            <a href="{% url 'audit_dashboard' %}" class="btn-vn-outline lg">Monitor Claims</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn-vn-lime lg">Enter Terminal</a>
+                        <a href="{% url 'register_employee' %}" class="btn-vn-outline lg">Activate Account</a>
+                    {% endif %}
+                </div>
+            </div>
 
-<!-- ── HERO ── -->
-<section class="hero-section">
-    <div class="hero-inner">
-        <div class="hero-left fade-up fade-up-1">
-            <span class="section-label">Intelligent Expense Management</span>
-            <h1 class="hero-display">
-                Auditing Your<br>
-                <span class="lime-block">Financial</span><br>
-                Clarity.
-            </h1>
-            <p class="hero-sub">A unified platform that brings your expense submissions, receipt processing, policy compliance, and audit trail together — built for finance teams, managers, and auditors.</p>
-            <div class="hero-cta-group">
-                <a href="/receipts/" class="btn-lime lg">View Receipts</a>
-                <a href="/audit/" class="btn-outline-dark-ea lg">Audit Dashboard</a>
-            </div>
-        </div>
-
-        <div class="hero-panel fade-up fade-up-2">
-            <div class="panel-label">System Overview</div>
-            <h3>Real-time compliance visibility</h3>
-            <div class="hero-stat-grid">
-                <div class="hero-stat">
-                    <div class="stat-num">OCR</div>
-                    <div class="stat-label">Automated receipt extraction</div>
+            <div class="hero-stats-area">
+                <div class="vn-stat-card">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <div>
+                        <span class="stat-label">Security Protocol</span>
+                        <span class="stat-value">Obsidian V5</span>
+                    </div>
                 </div>
-                <div class="hero-stat">
-                    <div class="stat-num">AI</div>
-                    <div class="stat-label">Policy-aware audit decisions</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="stat-num">4</div>
-                    <div class="stat-label">Distinct access roles</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="stat-num">100%</div>
-                    <div class="stat-label">Full audit trail retained</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── FEATURES (3-col) ── -->
-<section class="page-section">
-    <div class="container-ea">
-        <span class="section-label">Core Capabilities</span>
-        <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;letter-spacing:-0.025em;margin-bottom:2.5rem;max-width:540px;line-height:1.2;">
-            Everything your finance team needs in one place
-        </h2>
-        <div class="feature-grid">
-            <div class="feature-block fade-up fade-up-1">
-                <div class="feat-num">01</div>
-                <h4>Receipt Intelligence</h4>
-                <p>Upload expense receipts and leverage OCR to extract key data automatically. Track processing status, validate file quality, and maintain a clean audit-ready history of every claim.</p>
-            </div>
-            <div class="feature-block fade-up fade-up-2">
-                <div class="feat-num">02</div>
-                <h4>Policy Automation</h4>
-                <p>Define and enforce dynamic expense rules across regions, departments, and expense categories. Policy documents are version-controlled and instantly applied to incoming claims.</p>
-            </div>
-            <div class="feature-block fade-up fade-up-3">
-                <div class="feat-num">03</div>
-                <h4>Audit Confidence</h4>
-                <p>Monitor every compliance decision, review AI-generated explanations, flag anomalies, and maintain a full unbroken chain of audit records for every submitted expense claim.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ── DISTINCTION (dark section) ── -->
-<section class="page-section dark">
-    <div class="container-ea">
-        <div class="distinction-grid">
-            <div class="distinction-left fade-up fade-up-1">
-                <span class="section-label lime">The Expense Auditor Advantage</span>
-                <h2>Built for precision at every stage of the expense lifecycle</h2>
-                <p>Whether you're an employee filing a claim, a finance auditor reviewing receipts, or a manager enforcing spend limits — Expense Auditor gives each role exactly the tools they need.</p>
-                <div style="margin-top:2rem;">
-                    <a href="/audit/" class="btn-lime">Explore Audit Dashboard</a>
-                </div>
-            </div>
-            <div class="distinction-right fade-up fade-up-2">
-                <div class="distinction-item">
-                    <h5>End-to-end receipt traceability</h5>
-                    <p>Every upload is timestamped, linked to a specific employee, and tracked through OCR processing, policy checks, and final audit resolution.</p>
-                </div>
-                <div class="distinction-item">
-                    <h5>Policy versioning & enforcement</h5>
-                    <p>Keep multiple policy documents side-by-side. Activate or archive rules with a single toggle and watch the compliance engine adapt in real time.</p>
-                </div>
-                <div class="distinction-item">
-                    <h5>Role-gated access control</h5>
-                    <p>Employees, Finance Auditors, Finance Managers, and Audit Viewers each see a tailored view with permissions appropriate to their function.</p>
-                </div>
-                <div class="distinction-item">
-                    <h5>Notification engine</h5>
-                    <p>Automated status updates, escalation alerts, and approval notifications are dispatched the moment a claim moves through the workflow.</p>
+                <div class="vn-stat-card">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                    <div>
+                        <span class="stat-label">Audit Engine</span>
+                        <span class="stat-value">Active</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-
-<!-- ── QUICK ACTIONS + CTA ── -->
-<section class="page-section light-gray">
-    <div class="container-ea">
-        <div style="display:grid;grid-template-columns:1fr 340px;gap:2.5rem;align-items:start;">
-            <div class="fade-up fade-up-1">
-                <span class="section-label">Workflow</span>
-                <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;letter-spacing:-0.025em;line-height:1.2;margin-bottom:1rem;">
-                    From submission to approval — fully automated
-                </h2>
-                <p style="font-size:1rem;color:var(--muted);line-height:1.7;margin-bottom:2rem;max-width:500px;">
-                    Expense Auditor handles the heavy lifting. Employees upload receipts, the OCR engine extracts data, policies are applied automatically, and auditors receive a clean decision-ready summary.
-                </p>
-                <div style="display:flex;gap:12px;">
-                    <a href="/receipts/" class="btn-lime">Upload a Receipt</a>
-                    <a href="/policies/" class="btn-outline-dark-ea">Review Policies</a>
+    <!-- Visual Grid -->
+    <section class="vn-features page-section">
+        <div class="container-ea">
+            <div class="vn-grid-3">
+                <div class="vn-card stylish">
+                    <i class="bi bi-cpu-fill"></i>
+                    <h4>OCR Intelligence</h4>
+                    <p>Automated data extraction from receipts with real-time confidence scoring and image quality assessment.</p>
+                    <a href="{% url 'audit_dashboard' %}" class="vn-mini-link">Monitor Claims <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="vn-card stylish">
+                    <i class="bi bi-journal-check"></i>
+                    <h4>Policy Enforcement</h4>
+                    <p>Dynamic auditing against the 2023 Expenses Policy. Automatic rejection of out-of-policy submissions.</p>
+                    <a href="{% url 'policy_list' %}" class="vn-mini-link">Read Policies <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="vn-card stylish">
+                    <i class="bi bi-people-fill"></i>
+                    <h4>Admin Consensus</h4>
+                    <p>Multi-administrator verification system for every policy update, ensuring complete organizational alignment.</p>
+                    <a href="/notifications/" class="vn-mini-link">Check Alerts <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
-            <div class="quick-actions fade-up fade-up-2">
-                <h5>Quick Actions</h5>
-                <a href="/receipts/" class="quick-link">Upload receipt <span class="arrow">&#8594;</span></a>
-                <a href="/policies/" class="quick-link">Review active policies <span class="arrow">&#8594;</span></a>
-                <a href="/audit/" class="quick-link">View audit decisions <span class="arrow">&#8594;</span></a>
-                <a href="/notifications/" class="quick-link">Check alerts <span class="arrow">&#8594;</span></a>
-                <a href="/admin/" class="quick-link">Admin panel <span class="arrow">&#8594;</span></a>
-            </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 
+<style>
+/* ── HOME VN (STYLED OBSIDIAN) ── */
+
+.home-page-vn { background: var(--vn-obsidian); }
+
+.hero-vn {
+    padding: 10rem 0 8rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background gradient glow */
+.hero-vn::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(184, 255, 0, 0.05) 0%, rgba(0,0,0,0) 70%);
+}
+
+.flex-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4rem;
+}
+
+.hero-text-area { flex: 1.2; }
+
+.badge-vn {
+    display: inline-block;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--vn-border);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2.5rem;
+}
+
+.vn-cta-group { display: flex; gap: 1.5rem; margin-top: 4rem; }
+.btn-vn-lime.lg { padding: 16px 40px; font-size: 0.95rem; }
+.btn-vn-outline.lg { padding: 16px 40px; font-size: 0.95rem; }
+
+.hero-stats-area {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.vn-stat-card {
+    background: var(--vn-carbon);
+    border: 1px solid var(--vn-border);
+    padding: 2rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.vn-stat-card i { font-size: 2rem; color: var(--vn-lime) !important; text-shadow: var(--vn-glow); }
+.stat-label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; opacity: 0.5; margin-bottom: 4px; }
+.stat-value { font-size: 1.5rem; font-weight: 900; }
+
+.vn-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+}
+
+.vn-card.stylish {
+    padding: 3.5rem 3rem;
+    position: relative;
+    overflow: hidden;
+}
+.vn-card.stylish i { font-size: 2.5rem; margin-bottom: 2rem; display: block; color: var(--vn-lime) !important; }
+.vn-card.stylish h4 { font-size: 1.4rem; font-weight: 900; margin-bottom: 1.5rem; }
+.vn-card.stylish p { opacity: 0.5; line-height: 1.7; font-size: 0.95rem; margin-bottom: 2rem; }
+
+.vn-mini-link {
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+.vn-mini-link:hover { color: var(--vn-lime) !important; gap: 12px; }
+
+@media (max-width: 1000px) {
+    .flex-hero, .vn-grid-3 { flex-direction: column; grid-template-columns: 1fr; }
+    .hero-stats-area { width: 100%; margin-top: 3rem; }
+}
+</style>
 {% endblock %}

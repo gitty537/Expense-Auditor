@@ -81,3 +81,12 @@ class Role(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
+
+
+class EmployeeWhitelist(models.Model):
+    employee_id = models.CharField(max_length=5, unique=True, help_text="5-digit employee ID")
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"ID: {self.employee_id} ({'Used' if self.is_used else 'Available'})"

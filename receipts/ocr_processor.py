@@ -16,7 +16,7 @@ class ReceiptOCRProcessor:
         """Set Tesseract path if needed"""
         import platform
         if platform.system() == 'Windows':
-            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     
     @staticmethod
     def preprocess_image(image_path):
@@ -133,11 +133,28 @@ class ReceiptOCRProcessor:
                 currency_code = code
                 break
 
+        # Category Detection
+        categories = {
+            'meals': ['breakfast', 'lunch', 'dinner', 'meal', 'restaurant', 'cafe', 'food', 'eat', 'grill', 'bar', 'kitchen'],
+            'transport': ['taxi', 'uber', 'lyft', 'train', 'rail', 'flight', 'airline', 'air', 'mileage', 'fuel', 'gas', 'parking', 'bus', 'tube', 'subway', 'oyster'],
+            'lodging': ['hotel', 'inn', 'stay', 'accommodation', 'motel', 'lodge', 'suites'],
+            'entertainment': ['cinema', 'theatre', 'show', 'concert', 'gift'],
+            'external_event': ['conference', 'event', 'workshop', 'seminar', 'meeting', 'summit', 'exhibition'],
+        }
+        
+        detected_category = 'other'
+        lower_text = raw_text.lower()
+        for cat, keywords in categories.items():
+            if any(kw in lower_text for kw in keywords):
+                detected_category = cat
+                break
+
         return {
             'merchant_name': merchant,
             'transaction_date': transaction_date,
             'total_amount': total_amount,
             'currency_code': currency_code,
+            'category': detected_category,
             'raw_text': raw_text
         }
     

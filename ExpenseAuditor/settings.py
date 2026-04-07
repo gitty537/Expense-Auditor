@@ -61,7 +61,15 @@ DEBUG = env_bool(os.getenv('DEBUG', 'False'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://127.0.0.1',
+    'http://localhost',
+]
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False
 
 
 # Application definition
@@ -104,6 +112,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "notifications.context_processors.unread_notifications_count",
             ],
         },
     },
@@ -178,9 +187,14 @@ FILE_UPLOAD_MAX_MEMORY_SIZE  = 105 * 1024 * 1024  # 105 MB
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/audit/'
 LOGOUT_REDIRECT_URL = '/login/'
 LOGIN_URL = 'login'
+
+# Session settings - expire sessions when browser closes
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600  # 1 hour session timeout
+SESSION_SAVE_EVERY_REQUEST = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': (
@@ -199,3 +213,7 @@ REST_FRAMEWORK = {
     'SEARCH_PARAM': 'search',
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
+
+# Celery local bypass
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_BROKER_URL = 'memory://'

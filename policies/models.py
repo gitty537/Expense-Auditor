@@ -14,7 +14,13 @@ class PolicyDocument(models.Model):
         related_name='uploaded_policy_documents',
     )
     upload_date = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=20,
+        choices=[('pending', 'Pending Review'), ('active', 'Active'), ('rejected', 'Rejected')],
+        default='pending'
+    )
+    content = models.TextField(blank=True)
     effective_date = models.DateField()
     deprecation_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -80,3 +86,23 @@ class PolicyIndex(models.Model):
 
     def __str__(self):
         return f"Index for {self.policy_rule.constraint_name}"
+
+
+class PolicyApproval(models.Model):
+    policy = models.ForeignKey(
+        PolicyDocument,
+        on_delete=models.CASCADE,
+        related_name='approvals',
+    )
+    admin = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='policy_approvals',
+    )
+    approved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('policy', 'admin')
+
+    def __str__(self):
+        return f"Approval for {self.policy.version} by {self.admin.username}"

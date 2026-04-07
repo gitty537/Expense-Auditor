@@ -1,55 +1,183 @@
 {% extends 'base.html' %}
-{% block title %}Register User — Expense Auditor{% endblock %}
+{% block title %}Activate Account — Expense Auditor{% endblock %}
 
 {% block content %}
-<section class="page-header">
-    <div class="container-ea">
-        <span class="section-label lime">Admin Tools</span>
-        <h1>Register New User</h1>
-        <p>Register an employee or an admin for your workspace.</p>
-    </div>
-</section>
-
-<section class="page-section compact">
-    <div class="container-ea">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert {{ message.tags }}" style="background:var(--card-bg); border:1px solid var(--border-color); padding: 1rem; border-radius: 8px; margin-bottom:1rem; color: {% if message.tags == 'error' %}#f44336{% else %}var(--lime-primary){% endif %};">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px; padding:2rem; max-width:600px; margin: 0 auto;">
-            <form method="POST" action="{% url 'register' %}">
-                {% csrf_token %}
-
-                <div style="margin-bottom:1.5rem;">
-                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-light);">Username <span style="color:#f44336;">*</span></label>
-                    <input type="text" name="username" required style="width:100%; padding:0.75rem; background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light); accent-color:var(--lime-primary);">
-                </div>
-
-                <div style="margin-bottom:1.5rem;">
-                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-light);">Email Address</label>
-                    <input type="email" name="email" style="width:100%; padding:0.75rem; background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light); accent-color:var(--lime-primary);">
-                </div>
-
-                <div style="margin-bottom:1.5rem;">
-                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-light);">Password <span style="color:#f44336;">*</span></label>
-                    <input type="password" name="password" required style="width:100%; padding:0.75rem; background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light); accent-color:var(--lime-primary);">
-                </div>
-
-                <div style="margin-bottom:2rem;">
-                    <label style="display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-light);">Access Role <span style="color:#f44336;">*</span></label>
-                    <select name="role" required style="width:100%; padding:0.75rem; background:var(--bg-color); border:1px solid var(--border-color); border-radius:8px; color:var(--text-light);">
-                        <option value="employee">Employee</option>
-                        <option value="admin">Administrator</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-ea" style="width:100%; justify-content:center; padding:1rem; font-size:1.1rem; background:var(--lime-primary); color:black; border:none; border-radius:8px; cursor:pointer;">Register User</button>
-            </form>
+<div class="register-page-vn">
+    <!-- Header (Obsidian Night) -->
+    <section class="top-header-vn">
+        <div class="container-ea">
+            <span class="badge-vn">Employee Portal</span>
+            <h1 class="vn-title">Activate <span class="vn-accent">Account</span></h1>
+            <p class="vn-subtitle">Register securely using your 5-digit proprietary Employee ID.</p>
         </div>
-    </div>
-</section>
+    </section>
+
+    <!-- Registration Module -->
+    <section class="page-section obsidian-bg">
+        <div class="container-ea flex-register">
+            
+            <!-- Left Info Panel -->
+            <div class="vn-register-info">
+                <h3>Welcome to the Future of Auditing</h3>
+                <p>Expense Auditor guarantees automated tracking, smart AI integrations, and instant verification for every step of your expense reporting cycle.</p>
+                <div class="vn-security-badge">
+                    <i class="bi bi-shield-check"></i>
+                    <span>256-bit Encrypted Node Session</span>
+                </div>
+            </div>
+
+            <!-- Right Form Panel -->
+            <div class="vn-register-form-wrap">
+
+                <div class="vn-card-portal">
+                    <h4 style="margin-bottom: 2rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; border-left: 3px solid var(--vn-lime); padding-left: 1rem;">System Access</h4>
+                    
+                    <form method="POST" action="{% url 'register_employee' %}" class="vn-auth-form">
+                        {% csrf_token %}
+
+                        <div class="vn-form-group">
+                            <label>Employee ID <span class="vn-req">*</span></label>
+                            <div class="vn-input-icon">
+                                <i class="bi bi-person-badge"></i>
+                                <input type="text" name="employee_id" required pattern="\d{5}" title="Must be exactly 5 digits" placeholder="e.g. 12345" class="vn-input-dark">
+                            </div>
+                            <small>Enter the 5-digit identifier provided by your administrator.</small>
+                        </div>
+
+                        <div class="vn-form-group">
+                            <label>Password <span class="vn-req">*</span></label>
+                            <div class="vn-input-icon">
+                                <i class="bi bi-key-fill"></i>
+                                <input type="password" name="password" required placeholder="Choose a secure password" class="vn-input-dark">
+                            </div>
+                        </div>
+
+                        <div class="vn-form-group">
+                            <label>Confirm Password <span class="vn-req">*</span></label>
+                            <div class="vn-input-icon">
+                                <i class="bi bi-shield-lock-fill"></i>
+                                <input type="password" name="confirm_password" required placeholder="Repeat password to verify" class="vn-input-dark">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-vn-lime lg w-full mt-4">Initiate Registration Sequence</button>
+                        
+                        <div class="vn-form-footer">
+                            <p>Already have an active node?</p>
+                            <a href="{% url 'login' %}">Authenticate Here &rarr;</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+<style>
+/* ── REGISTER VN (PREMIUM OBSIDIAN) ── */
+
+.register-page-vn { background: var(--vn-obsidian); }
+
+.flex-register {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5rem;
+    padding: 2rem 0;
+}
+
+.vn-register-info { flex: 1; padding-right: 2rem; }
+.vn-register-info h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 1.5rem; }
+.vn-register-info p { font-size: 1.1rem; opacity: 0.5; line-height: 1.8; margin-bottom: 2.5rem; }
+
+.vn-security-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(184, 255, 0, 0.05);
+    border: 1px solid rgba(184, 255, 0, 0.2);
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: var(--vn-lime);
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.vn-security-badge i { font-size: 1.25rem; }
+
+.vn-register-form-wrap { flex: 1.2; width: 100%; max-width: 550px; }
+
+.vn-card-portal {
+    background: var(--vn-carbon);
+    border: 1px solid var(--vn-border);
+    padding: 3.5rem;
+    border-radius: 20px;
+}
+
+.vn-form-group { margin-bottom: 1.5rem; }
+.vn-form-group label { display: block; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.5; }
+.vn-req { color: #F44336; }
+.vn-form-group small { display: block; margin-top: 8px; font-size: 0.75rem; font-weight: 700; opacity: 0.3; }
+
+.vn-input-icon { position: relative; }
+.vn-input-icon i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #FFF;
+    opacity: 0.2;
+    font-size: 1.1rem;
+}
+
+.vn-input-dark {
+    width: 100%;
+    background: #000;
+    border: 1px solid var(--vn-border);
+    padding: 16px 16px 16px 45px;
+    border-radius: 8px;
+    color: #FFF;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+.vn-input-dark:focus { border-color: var(--vn-lime); outline: none; }
+.vn-input-icon:focus-within i { opacity: 1; color: var(--vn-lime); }
+
+.w-full { width: 100%; }
+.mt-4 { margin-top: 1.5rem; }
+
+.vn-messages-container { margin-bottom: 2rem; }
+.vn-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+.vn-alert.success { background: rgba(184, 255, 0, 0.05); color: var(--vn-lime); border: 1px solid rgba(184, 255, 0, 0.1); }
+.vn-alert.error { background: rgba(244, 67, 54, 0.05); color: #F44336; border: 1px solid rgba(244, 67, 54, 0.1); }
+.vn-alert i { font-size: 1.2rem; }
+
+.vn-form-footer {
+    margin-top: 2rem;
+    text-align: center;
+    border-top: 1px solid var(--vn-border);
+    padding-top: 2rem;
+}
+.vn-form-footer p { opacity: 0.4; font-size: 0.85rem; margin-bottom: 8px; }
+.vn-form-footer a { color: var(--vn-lime); font-weight: 800; font-size: 0.9rem; text-decoration: none; transition: 0.3s; }
+.vn-form-footer a:hover { opacity: 0.7; }
+
+@media (max-width: 900px) {
+    .flex-register { flex-direction: column; gap: 3rem; }
+    .vn-register-info { padding-right: 0; text-align: center; }
+    .vn-card-portal { padding: 2.5rem; }
+}
+</style>
 {% endblock %}
